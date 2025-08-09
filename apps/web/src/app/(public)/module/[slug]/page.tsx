@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getServerTrpcCaller } from '@/server/trpcClient';
 
 type Params = { params: { slug: string } };
 
@@ -23,7 +24,17 @@ const SAMPLE: Record<string, { title: string; lessons: { slug: string; title: st
 
 export default async function ModulePage({ params }: Params) {
   const { slug } = params;
-  const data = SAMPLE[slug] ?? { title: slug, lessons: [], labs: [] };
+  let data: { title: string; lessons: { slug: string; title: string }[]; labs: { id: string; title: string }[] } =
+    SAMPLE[slug] ?? { title: slug, lessons: [], labs: [] };
+  try {
+    const caller = await getServerTrpcCaller();
+    const mod = await caller.module.getBySlug({ slug });
+    data = {
+      title: mod.title,
+      lessons: mod.lessons.map((l: any) => ({ slug: l.slug, title: l.title })),
+      labs: mod.labs.map((l: any) => ({ id: l.id, title: l.title })),
+    };
+  } catch {}
   return (
     <main className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-bold">{data.title}</h1>
