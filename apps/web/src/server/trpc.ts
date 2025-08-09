@@ -1,9 +1,10 @@
 import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
+import type { Session } from 'next-auth';
 import { db as prisma } from './db';
 
 export type TRPCContext = {
-  session: Awaited<ReturnType<typeof getSession>>;
+  session: Session | null;
   db: typeof prisma;
 };
 
