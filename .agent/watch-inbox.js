@@ -37,6 +37,13 @@ function handleFile(filePath) {
     const { event, payload } = JSON.parse(raw)
     if (['issues', 'issue_comment', 'pull_request'].includes(event)) {
       triggerPoller(event)
+      if (event === 'pull_request' && ['opened','synchronize','reopened'].includes(payload?.action)) {
+        // Fire a one-off automated review
+        const child = spawn('node', ['.agent/review-pr.js', path.resolve(filePath)], { stdio: 'inherit' })
+        child.on('exit', (code) => {
+          console.log(`[agent-watch] review runner exited ${code}`)
+        })
+      }
     }
   } catch (err) {
     console.error('[agent-watch] Failed processing', filePath, err.message)
