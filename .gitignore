@@ -7,7 +7,6 @@ coverage
 .DS_Store
 .env
 .env.*.local
-pnpm-lock.yaml
 
 # Agent local state
 .agent/state.json
