@@ -10,6 +10,7 @@ coverage
 
 # Agent local state
 .agent/state.json
+/.agent/**
 
 # TypeScript build info
 **/*.tsbuildinfo
