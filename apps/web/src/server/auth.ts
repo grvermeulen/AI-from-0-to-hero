@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
       },
       authorize: async (creds) => {
         const parsed = z
-          .object({ email: z.string().email(), password: z.string().min(6) })
+          .object({ email: z.string().min(1), password: z.string().min(1) })
           .safeParse(creds);
         if (!parsed.success) return null;
         const { email, password } = parsed.data;
