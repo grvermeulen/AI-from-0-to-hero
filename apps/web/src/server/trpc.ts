@@ -1,15 +1,24 @@
 import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
-import { getSession } from './auth';
+import type { Session } from 'next-auth';
 import { db as prisma } from './db';
 
 export type TRPCContext = {
-  session: Awaited<ReturnType<typeof getSession>>;
+  session: Session | null;
   db: typeof prisma;
 };
 
 export async function createTRPCContext(): Promise<TRPCContext> {
-  const session = await getSession();
+  let session: TRPCContext['session'] = null as any;
+  try {
+    // Dynamically import auth to avoid hard dependency when not configured yet
+    const mod = await import('./auth');
+    if (typeof mod.getSession === 'function') {
+      session = await mod.getSession();
+    }
+  } catch {
+    // leave session as null
+  }
   return { session, db: prisma };
 }
 

@@ -1,0 +1,15 @@
+{
+  "name": "mcp-chrome",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "mcp-chrome": "./src/index.ts"
+  },
+  "dependencies": {
+    "chrome-remote-interface": "^0.33.0",
+    "commander": "^11.1.0",
+    "ws": "^8.17.1"
+  }
+}
+
