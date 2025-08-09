@@ -14,6 +14,8 @@ jobs:
           node-version: 20
       - run: corepack enable
       - run: pnpm install --frozen-lockfile
+      - name: Generate Prisma Client
+        run: pnpm dlx prisma generate --schema prisma/schema.prisma
       - run: pnpm lint && pnpm typecheck && pnpm --filter web test:ci
       - run: pnpm build
 
