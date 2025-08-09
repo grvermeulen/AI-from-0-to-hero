@@ -1,8 +1,9 @@
 AI‑First QA Training Platform — Build Progress
 
+
 - [x] 1. Scaffold Next.js 14 + Tailwind + ESLint (monorepo via pnpm workspaces)
 - [x] 2. Add tRPC + Zod baseline (HTTP adapter route, sample router)
-- [ ] 3. Implement Auth (NextAuth credentials), RBAC guards
+- [x] 3. Implement Auth (NextAuth credentials), RBAC guards
 - [ ] 4. Add Prisma models + migrations; seed minimal tracks/modules
 - [ ] 5. Wire public/authed/admin tRPC routers
 - [ ] 6. Build Home, Catalog, Lesson, Lab Runner, Quiz, Profile screens

@@ -13,11 +13,13 @@
   "scripts": {
     "build": "pnpm -r build",
     "dev": "pnpm --filter web dev",
+    "dev:agents": "bash scripts/dev_agents.sh",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "agent:poll": "node .agent/poller.js",
-    "agent:seed-labels": "node .agent/seed-labels.js"
+    "agent:seed-labels": "node .agent/seed-labels.js",
+    "agent:watch": "node .agent/watch-inbox.js"
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
