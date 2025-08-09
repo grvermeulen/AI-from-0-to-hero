@@ -560,6 +560,67 @@ SITE_URL=
 
 ---
 
+## 18.1) Step 6 Detailed Plan — Lessons, Content, Gamification (near‑term slice)
+
+Goal: ship a usable learning slice end‑to‑end for one module (Git Basics) with real content, quizzes, XP accrual, and visible progress. Keep it simple, type‑safe, observable, and operable.
+
+- **Scope for the first slice**:
+  - Catalog → Track: Foundation
+  - Module: Git Basics
+  - Lessons (MDX content):
+    1. Intro to Git (concepts, install, init/clone)
+    2. Branching & Merging (feature branches, fast‑forward vs merge commits)
+    3. Pull Requests & Code Review (remote, PR flow, review etiquette)
+    4. Rebasing & History Hygiene (interactive rebase, squash, amend)
+    5. Resolving Conflicts (strategies, common pitfalls)
+  - Quiz: 6–8 questions aligned to learning objectives for the module
+  - Lab: small repo task (create branch, commit, open PR; submit link) — auto checks run later
+  - Progress: mark lesson completion, award XP, show in Profile
+
+- **Lesson content framework (per lesson)**:
+  - Learning objectives (3–5 bullets)
+  - Concept brief with diagrams/code blocks (MDX)
+  - Hands‑on steps (terminal snippets)
+  - Inline AI prompt block(s) (e.g., “Explain why rebase rewrites history; give 2 examples”) — stored as `AIPromptTemplate`
+  - Quick check mini‑quiz (1–2 questions) or reflection
+  - Portfolio nudge (link PR/screenshots)
+
+- **Gamification v1**:
+  - XP rules: lesson complete +10, quiz pass ≥80% +25, lab submit +10, lab pass +40
+  - Badges (initial): First Lesson, First Quiz Pass, First Lab Submit, Git Explorer (finish module)
+  - Streak: day‑based, +50 bonus at 7‑day (phase 2)
+  - Leaderboard: weekly + all‑time (phase 2 UI), computed from `XPEvent`
+
+- **APIs to deliver in this slice**:
+  - `track.list` (done), `module.listByTrack`, `lesson.get`, `quiz.start/submit`, `lab.start/submit`, `me.progress`
+  - Admin: `track.upsert`, `module.upsert`, `lesson.upsert`, `quiz.upsert`, `question.upsert` (CRUD later)
+
+- **UI deliverables**:
+  - Catalog page → list tracks (real data) [in progress]
+  - Module page → list lessons + actions (real data)
+  - Lesson page → render MDX content + prompt widgets (server component)
+  - Quiz page → MC/short answer, submit, show score
+  - Lab runner (v1) → instructions + submit repo URL or upload file
+  - Profile → XP total, recent badges, submission stats (tRPC `me.progress`)
+
+- **Instrumentation & ops**:
+  - Structured logs on all tRPC procedures (timings, userId, input hash)
+  - Health check OK (done), add DB check in `/api/health`
+  - Seed script: Track "Foundation" → Module "Git Basics" → 5 Lessons + 1 Quiz + 1 Lab
+
+- **Acceptance criteria for the slice**:
+  - Pages render server‑side without crashes; errors logged with request IDs
+  - Git Basics lessons load from DB; MDX rendered; completion toggles XP +10
+  - Quiz pass awards XP +25 and records a `Submission`
+  - Lab submit creates `Submission(PENDING)`; XP +10 on submit; pass later via grader
+  - Profile shows XP total and last 5 submissions
+
+- **Next slices after v1**:
+  - Add grader pipeline for labs (unit/e2e/rubric‑ai)
+  - Badge rules UI; weekly leaderboards; streaks
+  - ReadyAPI → Playwright converter template + evaluator
+
+
 ## 19) Acceptance Criteria
 
 * All tests pass in CI; critical module coverage ≥80%.
