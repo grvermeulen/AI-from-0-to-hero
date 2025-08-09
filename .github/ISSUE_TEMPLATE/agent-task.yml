@@ -1,0 +1,50 @@
+name: Agent Task
+description: Create a structured task for the coding agent to pick up
+title: "[Agent] <short title>"
+labels:
+  - agent:assistant
+  - status:ready
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Provide enough context and clear acceptance criteria. Use labels to set priority and status.
+  - type: input
+    id: context
+    attributes:
+      label: Context / Background
+      description: Why this is needed, related links, code pointers
+      placeholder: e.g. Link to file `apps/web/src/server/routers/_app.ts`
+    validations:
+      required: true
+  - type: textarea
+    id: task
+    attributes:
+      label: Task Description
+      description: What exactly should be done?
+      placeholder: e.g. Add public `healthcheck` tRPC procedure returning { ok: true }
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Pass/fail checks for completion
+      placeholder: e.g. Calling GET /api/trpc/healthcheck returns data.ok === true
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P1 (urgent)
+        - P2 (normal)
+        - P3 (low)
+    validations:
+      required: true
+  - type: input
+    id: due
+    attributes:
+      label: Due date (optional)
+      placeholder: YYYY-MM-DD
