@@ -20,6 +20,7 @@
     "agent:seed-labels": "node .agent/seed-labels.js"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
     "prisma": "6.13.0"
   },
   "dependencies": {
