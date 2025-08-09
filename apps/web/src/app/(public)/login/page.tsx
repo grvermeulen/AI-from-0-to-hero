@@ -19,6 +19,7 @@ export default function LoginPage() {
         </label>
         <button className="bg-black text-white px-4 py-2" type="submit">Sign in</button>
       </form>
+      <p className="mt-4 text-sm">No account? <a className="underline" href="/signup">Sign up</a></p>
     </main>
   );
 }
