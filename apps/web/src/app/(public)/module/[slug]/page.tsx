@@ -57,7 +57,7 @@ export default async function ModulePage({ params }: Params) {
         <ul className="mt-2 grid gap-2">
           {data.labs.map((l) => (
             <li key={l.id}>
-              <span>{l.title}</span>
+              <Link className="underline" href={`/lab/${l.id}`}>{l.title}</Link>
             </li>
           ))}
           {data.labs.length === 0 && <li className="text-sm text-gray-500">No labs yet.</li>}

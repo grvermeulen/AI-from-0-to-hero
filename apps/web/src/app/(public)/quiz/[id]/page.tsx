@@ -1,9 +1,11 @@
 import { getServerTrpcCaller } from '@/server/trpcClient';
-import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 type Params = { params: { id: string } };
 
-export default async function QuizPage({ params }: Params) {
+type SearchParams = { searchParams?: { score?: string; passed?: string; error?: string } };
+
+export default async function QuizPage({ params, searchParams }: Params & SearchParams) {
   const { id } = params;
   const caller = await getServerTrpcCaller();
 
@@ -16,10 +18,10 @@ export default async function QuizPage({ params }: Params) {
     const c = await getServerTrpcCaller();
     try {
       const res = await c.quiz.submit({ quizId: id, answers });
-      revalidatePath(`/quiz/${id}`);
-      return { ok: true, res };
+      const q = new URLSearchParams({ score: String(res.score ?? ''), passed: res.passed ? '1' : '0' });
+      redirect(`/quiz/${id}?${q.toString()}`);
     } catch (e) {
-      return { ok: false };
+      redirect(`/quiz/${id}?error=1`);
     }
   }
 
@@ -28,6 +30,15 @@ export default async function QuizPage({ params }: Params) {
     return (
       <main className="max-w-3xl mx-auto p-6">
         <h1 className="text-2xl font-bold">{quiz.title}</h1>
+        {searchParams?.score !== undefined && (
+          <div className="mt-3 rounded border p-3 text-sm">
+            <div>Score: <span className="font-semibold">{searchParams.score}</span></div>
+            <div>Status: {searchParams.passed === '1' ? <span className="text-green-700 font-semibold">Passed</span> : <span className="text-red-700 font-semibold">Failed</span>}</div>
+          </div>
+        )}
+        {searchParams?.error && (
+          <div className="mt-3 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800">Submission failed. Please login and try again.</div>
+        )}
         <form action={submit} className="mt-4">
           <ol className="grid gap-4 list-decimal pl-6">
           {quiz.questions.map((q: any) => (

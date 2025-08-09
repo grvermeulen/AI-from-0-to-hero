@@ -9,6 +9,7 @@ export default function HomePage() {
         <nav className="mt-8 grid gap-2 justify-center">
           <a className="underline" href="/catalog">Browse tracks</a>
           <a className="underline" href="/profile">My profile</a>
+          <a className="underline" href="/login">Login</a>
         </nav>
       </div>
     </main>

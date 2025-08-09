@@ -1,9 +1,10 @@
 import { getServerTrpcCaller } from '@/server/trpcClient';
-import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 type Params = { params: { id: string } };
+type SearchParams = { searchParams?: { submissionId?: string; error?: string } };
 
-export default async function LabPage({ params }: Params) {
+export default async function LabPage({ params, searchParams }: Params & SearchParams) {
   const { id } = params;
   const caller = await getServerTrpcCaller();
   async function submit(formData: FormData) {
@@ -13,10 +14,10 @@ export default async function LabPage({ params }: Params) {
     const c = await getServerTrpcCaller();
     try {
       const res = await c.lab.submit({ labId: id, repoUrl: repoUrl || undefined, code: code || undefined });
-      revalidatePath(`/lab/${id}`);
-      return { ok: true, res };
+      const q = new URLSearchParams({ submissionId: res.submissionId });
+      redirect(`/lab/${id}?${q.toString()}`);
     } catch (e) {
-      return { ok: false };
+      redirect(`/lab/${id}?error=1`);
     }
   }
 
@@ -25,6 +26,15 @@ export default async function LabPage({ params }: Params) {
     return (
       <main className="max-w-3xl mx-auto p-6">
         <h1 className="text-2xl font-bold">{lab.title}</h1>
+        {searchParams?.submissionId && (
+          <div className="mt-3 rounded border p-3 text-sm">
+            <div>Submission: <span className="font-mono">{searchParams.submissionId}</span></div>
+            <div>Status: <span className="font-semibold">Pending</span></div>
+          </div>
+        )}
+        {searchParams?.error && (
+          <div className="mt-3 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800">Submission failed. Please login and try again.</div>
+        )}
         <p className="mt-4 whitespace-pre-wrap text-gray-800">{lab.description}</p>
         <form action={submit} className="mt-6 rounded border p-4 grid gap-3">
           <h2 className="text-lg font-semibold">Submit</h2>

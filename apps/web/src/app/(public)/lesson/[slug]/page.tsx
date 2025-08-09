@@ -1,4 +1,6 @@
 import { getServerTrpcCaller } from '@/server/trpcClient';
+import { remark } from 'remark';
+import html from 'remark-html';
 
 type Params = { params: { slug: string } };
 
@@ -15,10 +17,12 @@ export default async function LessonPage({ params }: Params) {
     const lesson = await caller.lesson.get({ slug });
     data = { title: (lesson as any).title, contentMd: (lesson as any).contentMd };
   } catch {}
+  const processed = await remark().use(html).process(data.contentMd);
+  const contentHtml = processed.toString();
   return (
     <main className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-bold">{data.title}</h1>
-      <article className="prose mt-4 whitespace-pre-wrap">{data.contentMd}</article>
+      <article className="prose mt-4" dangerouslySetInnerHTML={{ __html: contentHtml }} />
     </main>
   );
 }
