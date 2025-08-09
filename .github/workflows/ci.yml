@@ -14,7 +14,7 @@ jobs:
           node-version: 20
       - run: corepack enable
       - run: pnpm install --frozen-lockfile
-      - run: pnpm lint && pnpm typecheck && pnpm test
+      - run: pnpm lint && pnpm typecheck && pnpm --filter web test:ci
       - run: pnpm build
 
   deploy:

@@ -4,6 +4,14 @@ import { compare } from 'bcryptjs';
 import { db } from './db';
 import { z } from 'zod';
 
+export async function authorizeCredentials(email: string, password: string) {
+  const user = await db.user.findUnique({ where: { email } });
+  if (!user) return null;
+  const ok = await compare(password, user.passwordHash);
+  if (!ok) return null;
+  return { id: user.id, email: user.email, role: user.role } as any;
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     Credentials({
@@ -18,11 +26,7 @@ export const authOptions: NextAuthOptions = {
           .safeParse(creds);
         if (!parsed.success) return null;
         const { email, password } = parsed.data;
-        const user = await db.user.findUnique({ where: { email } });
-        if (!user) return null;
-        const ok = await compare(password, user.passwordHash);
-        if (!ok) return null;
-        return { id: user.id, email: user.email, role: user.role } as any;
+        return authorizeCredentials(email, password);
       },
     }),
   ],

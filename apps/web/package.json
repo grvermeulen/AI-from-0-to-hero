@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "echo 'skip lint for initial scaffold'",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest"
+    "test": "vitest",
+    "test:ci": "vitest --run"
   },
   "dependencies": {
     "@prisma/client": "6.13.0",
