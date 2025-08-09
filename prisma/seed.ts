@@ -19,6 +19,12 @@ async function main() {
     },
     update: {},
   });
+
+  await db.track.upsert({
+    where: { slug: 'ai-augmented' },
+    create: { slug: 'ai-augmented', name: 'AI‑Augmented Testing', phase: TrackPhase.AI_AUGMENTED, order: 2 },
+    update: {},
+  });
 }
 
 main()
