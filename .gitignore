@@ -14,3 +14,7 @@ coverage
 # TypeScript build info
 **/*.tsbuildinfo
 
+# Project-specific ignores
+apps/web/tsconfig.tsbuildinfo
+apps/web/.env.local
+
