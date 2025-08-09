@@ -20,6 +20,47 @@ async function main() {
     update: {},
   });
 
+  const introLesson = await db.lesson.upsert({
+    where: { slug: 'intro-to-git' },
+    create: {
+      slug: 'intro-to-git',
+      title: 'Intro to Git',
+      contentMd: '# Git Basics',
+      module: { connect: { slug: 'git-basics' } },
+      order: 1,
+    },
+    update: {},
+  });
+
+  const quiz = await db.quiz.upsert({
+    where: { id: 'seed-quiz-1' },
+    create: {
+      id: 'seed-quiz-1',
+      module: { connect: { slug: 'git-basics' } },
+      title: 'Git Quiz 1',
+      questions: {
+        create: [
+          { kind: 'mc', prompt: 'What does git add do?', options: '["stage changes","commit changes"]', answer: 'stage changes' },
+          { kind: 'mc', prompt: 'What command creates a commit?', options: '["git push","git commit"]', answer: 'git commit' },
+        ],
+      },
+    },
+    update: {},
+  });
+
+  await db.lab.upsert({
+    where: { id: 'seed-lab-1' },
+    create: {
+      id: 'seed-lab-1',
+      module: { connect: { slug: 'git-basics' } },
+      title: 'Initialize a Repo',
+      description: 'Create a repo, add a file, commit, and push.',
+      graderType: 'rubric-ai',
+      maxScore: 100,
+    },
+    update: {},
+  });
+
   await db.track.upsert({
     where: { slug: 'ai-augmented' },
     create: { slug: 'ai-augmented', name: 'AI‑Augmented Testing', phase: TrackPhase.AI_AUGMENTED, order: 2 },
