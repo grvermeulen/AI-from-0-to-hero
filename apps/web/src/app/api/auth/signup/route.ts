@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
+import { Role } from '@prisma/client';
 import { hash } from 'bcryptjs';
 
 export async function POST(req: Request) {
@@ -11,7 +12,7 @@ export async function POST(req: Request) {
     const exists = await db.user.findUnique({ where: { email } });
     if (exists) return NextResponse.redirect('/signup?error=exists');
     const passwordHash = await hash(password, 10);
-    await db.user.create({ data: { email, passwordHash, role: 'USER' as any } });
+    await db.user.create({ data: { email, passwordHash, role: Role.LEARNER } });
     return NextResponse.redirect('/api/auth/signin');
   } catch {
     return NextResponse.redirect('/signup?error=1');
