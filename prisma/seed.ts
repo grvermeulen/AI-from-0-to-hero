@@ -1,4 +1,5 @@
-import { PrismaClient, TrackPhase } from '@prisma/client';
+import { PrismaClient, TrackPhase, Role } from '@prisma/client';
+import { hashSync } from 'bcryptjs';
 
 const db = new PrismaClient();
 
@@ -65,6 +66,17 @@ async function main() {
     where: { slug: 'ai-augmented' },
     create: { slug: 'ai-augmented', name: 'AI‑Augmented Testing', phase: TrackPhase.AI_AUGMENTED, order: 2 },
     update: {},
+  });
+
+  // Dev test user: username/email "QA" with password "QA"
+  await db.user.upsert({
+    where: { email: 'QA' },
+    update: {},
+    create: {
+      email: 'QA',
+      passwordHash: hashSync('QA', 10),
+      role: Role.USER,
+    },
   });
 }
 

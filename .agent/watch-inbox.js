@@ -44,6 +44,13 @@ function handleFile(filePath) {
           console.log(`[agent-watch] review runner exited ${code}`)
         })
       }
+      if (event === 'issue_comment' && payload?.action === 'created') {
+        // React to PR comment commands
+        const child = spawn('node', ['.agent/act-on-comment.js', path.resolve(filePath)], { stdio: 'inherit' })
+        child.on('exit', (code) => {
+          console.log(`[agent-watch] act-on-comment exited ${code}`)
+        })
+      }
     }
   } catch (err) {
     console.error('[agent-watch] Failed processing', filePath, err.message)

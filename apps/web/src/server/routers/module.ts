@@ -16,6 +16,17 @@ export const moduleRouter = createTRPCRouter({
       return { items, total, page: input.page, pageSize: input.pageSize };
     }),
 
+  getBySlug: publicProcedure
+    .input(z.object({ slug: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const mod = await ctx.db.module.findUnique({
+        where: { slug: input.slug },
+        include: { lessons: { orderBy: { order: 'asc' } }, labs: true, quizzes: true },
+      });
+      if (!mod) throw new TRPCError({ code: 'NOT_FOUND', message: 'Module not found' });
+      return mod;
+    }),
+
   upsert: adminProcedure
     .input(z.object({
       id: z.string().optional(),

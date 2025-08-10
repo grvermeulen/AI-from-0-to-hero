@@ -19,7 +19,8 @@
     "test": "pnpm -r test",
     "agent:poll": "node .agent/poller.js",
     "agent:seed-labels": "node .agent/seed-labels.js",
-    "agent:watch": "node .agent/watch-inbox.js"
+    "agent:watch": "node .agent/watch-inbox.js",
+    "agent:webhook:update": "node .agent/update-webhook.js"
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
