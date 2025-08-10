@@ -14,7 +14,7 @@ export default async function LabPage({ params, searchParams }: Params & SearchP
     const c = await getServerTrpcCaller();
     try {
       const res = await c.lab.submit({ labId: id, repoUrl: repoUrl || undefined, code: code || undefined });
-      const q = new URLSearchParams({ submissionId: res.submissionId });
+      const q = new URLSearchParams({ submissionId: res.id });
       redirect(`/lab/${id}?${q.toString()}`);
     } catch (e) {
       redirect(`/lab/${id}?error=1`);

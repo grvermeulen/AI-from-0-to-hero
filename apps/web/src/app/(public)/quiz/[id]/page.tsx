@@ -18,7 +18,7 @@ export default async function QuizPage({ params, searchParams }: Params & Search
     const c = await getServerTrpcCaller();
     try {
       const res = await c.quiz.submit({ quizId: id, answers });
-      const q = new URLSearchParams({ score: String(res.score ?? ''), passed: res.passed ? '1' : '0' });
+      const q = new URLSearchParams({ score: String(res.score ?? ''), passed: res.status === 'PASSED' ? '1' : '0' });
       redirect(`/quiz/${id}?${q.toString()}`);
     } catch (e) {
       redirect(`/quiz/${id}?error=1`);
