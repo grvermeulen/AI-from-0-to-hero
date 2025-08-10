@@ -50,12 +50,28 @@ export default async function ProfilePage() {
             <div className="rounded border p-3">
               <div className="text-sm text-gray-600">Badges</div>
               <div className="text-xl font-semibold">{data.badgesCount}</div>
-              <div className="mt-2 flex gap-2">
-                {Array.from({ length: Math.min(data.badgesCount, 5) }).map((_, i) => (
-                  <div key={i} className="h-6 w-6 rounded-full bg-yellow-300" />
-                ))}
-                {data.badgesCount === 0 && <div className="text-xs text-gray-500">No badges yet</div>}
-              </div>
+              {data.badges?.length ? (
+                <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {data.badges.slice(0, 6).map((b: any) => (
+                    <li key={b.id} className="flex items-center gap-2">
+                      <div className="h-8 w-8 rounded bg-yellow-200 flex items-center justify-center text-xs">
+                        {b.icon ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={b.icon} alt={b.name} className="h-8 w-8 rounded object-cover" />
+                        ) : (
+                          <span>🏅</span>
+                        )}
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium leading-tight">{b.name}</div>
+                        <div className="text-xs text-gray-600">{new Date(b.earnedAt).toLocaleDateString()}</div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="mt-2 text-xs text-gray-500">No badges yet</div>
+              )}
             </div>
             <div className="rounded border p-3">
               <div className="text-sm text-gray-600">Submissions</div>
@@ -66,8 +82,8 @@ export default async function ProfilePage() {
             </div>
             <div className="rounded border p-3">
               <div className="text-sm text-gray-600">Streak</div>
-              <div className="text-xl font-semibold">0 days</div>
-              <div className="mt-1 text-xs text-gray-600">Keep learning to start a streak!</div>
+              <div className="text-xl font-semibold">{data.streakDays} days</div>
+              <div className="mt-1 text-xs text-gray-600">{data.streakDays > 0 ? 'Great momentum! 🔥' : 'Keep learning to start a streak!'}</div>
             </div>
           </div>
         </section>
