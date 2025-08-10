@@ -9,8 +9,20 @@ export default function SignUpPage() {
   const notice = useMemo(() => {
     const err = search?.get('error');
     if (!err) return null;
-    if (err === 'exists') return 'An account with this email already exists. Try logging in.';
-    return 'Invalid signup details. Please check your inputs and try again.';
+    switch (err) {
+      case 'exists':
+        return 'An account with this email already exists. Try logging in.';
+      case 'missing':
+        return 'Please fill in both email and password.';
+      case 'invalid_email':
+        return 'Email format looks invalid. Example: user@example.com';
+      case 'weak_password':
+        return 'Password is too short. Use at least 8 characters (mix letters, numbers, symbols recommended).';
+      case 'server':
+        return 'Unexpected server error during signup. Please try again.';
+      default:
+        return 'Invalid signup details. Please check your inputs and try again.';
+    }
   }, [search]);
   return (
     <main className="max-w-md mx-auto p-6">

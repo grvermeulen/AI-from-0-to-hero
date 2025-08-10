@@ -14,23 +14,60 @@ export default function LoginPage() {
     if (search?.get('signup') === '1') return 'Account created. Please sign in.';
     const err = search?.get('error');
     if (!err) return null;
-    if (err === 'CredentialsSignin') return 'Invalid email or password.';
-    if (err === 'AccessDenied') return 'Access denied.';
-    return 'Sign-in failed. Please try again.';
+    switch (err) {
+      case 'CredentialsSignin':
+        return 'Invalid email or password.';
+      case 'AccessDenied':
+        return 'Access denied.';
+      case 'Configuration':
+        return 'Auth configuration error. Please contact support.';
+      case 'OAuthSignin':
+      case 'OAuthCallback':
+      case 'OAuthCreateAccount':
+        return 'Third‑party sign‑in failed. Please try again or use email/password.';
+      case 'EmailSignin':
+        return 'Email sign‑in failed. Please try again.';
+      case 'SessionRequired':
+        return 'Please sign in to continue.';
+      default:
+        return 'Sign‑in failed. Please try again.';
+    }
   }, [search]);
+
+  function validateInputs(): string | null {
+    if (!email || !password) return 'Please fill in both email and password.';
+    const emailValid = /.+@.+\..+/.test(email);
+    if (!emailValid) return 'Email format looks invalid. Example: user@example.com';
+    return null;
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLocalError(null);
     setSubmitting(true);
     try {
+      const inputError = validateInputs();
+      if (inputError) {
+        setLocalError(inputError);
+        return;
+      }
       const res = await signIn('credentials', {
-        redirect: true,
+        redirect: false,
         email,
         password,
         callbackUrl: '/profile',
       });
-      // If redirect is false, you could handle res?.error here
+      if (res?.error) {
+        setLocalError(
+          res.error === 'CredentialsSignin'
+            ? 'Invalid email or password.'
+            : 'Sign‑in failed. Please try again.'
+        );
+        return;
+      }
+      if (res?.ok && res.url) {
+        window.location.assign(res.url);
+      }
     } catch (err) {
       setLocalError('Sign-in failed. Please try again.');
     } finally {
