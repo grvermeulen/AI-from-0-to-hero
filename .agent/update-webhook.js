@@ -26,12 +26,17 @@ function parseOrigin() {
 }
 
 async function getNgrokPublicUrl() {
-  const res = await fetch('http://127.0.0.1:4040/api/tunnels');
-  if (!res.ok) throw new Error('Unable to reach ngrok API at 127.0.0.1:4040');
+  // Allow overriding the base URL directly (e.g., Cloudflare Tunnel or manual ngrok URL)
+  const override = process.env.WEBHOOK_BASE_URL || process.env.WEBHOOK_PUBLIC_BASE_URL;
+  if (override) return override.replace(/\/$/, '');
+
+  const api = process.env.NGROK_API_URL || 'http://127.0.0.1:4040/api/tunnels';
+  const res = await fetch(api);
+  if (!res.ok) throw new Error(`Unable to reach tunnel API at ${api}`);
   const data = await res.json();
   const tunnels = Array.isArray(data.tunnels) ? data.tunnels : [];
   const https = tunnels.find(t => t.public_url && t.public_url.startsWith('https://')) || tunnels[0];
-  if (!https) throw new Error('No ngrok tunnels found. Start ngrok first.');
+  if (!https) throw new Error('No tunnels found in API response. Start ngrok first, or set WEBHOOK_BASE_URL.');
   return https.public_url;
 }
 
