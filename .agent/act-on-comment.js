@@ -83,6 +83,22 @@ async function addLabels(labels) {
     process.exit(0);
   }
 
+  const applyMatch = lower.match(/^\s*\/apply:([a-z0-9_-]+)\s*(.*)$/);
+  if (applyMatch) {
+    const subcmd = applyMatch[1];
+    const args = applyMatch[2] ? applyMatch[2].trim().split(/\s+/) : [];
+    await comment(`Applying '${subcmd}' to: ${args.join(' ') || '(defaults)'} …`);
+    const res = spawnSync('node', ['.agent/executor.js', subcmd, ...args], {
+      env: { ...process.env, OWNER: owner, REPO: repo, PR_NUMBER: String(prNumber) },
+      stdio: 'pipe',
+      encoding: 'utf8',
+    });
+    const code = res.status ?? 0;
+    const out = (res.stdout || '').slice(-4000);
+    await comment(code === 0 ? `Apply completed:\n\n\n${'```'}\n${out}\n${'```'}` : `Apply failed (exit ${code}).`);
+    process.exit(0);
+  }
+
   const labelsMatch = lower.match(/^\s*\/labels:\s*([^\n]+)/);
   if (labelsMatch) {
     const labels = labelsMatch[1].split(',').map(s => s.trim()).filter(Boolean);
