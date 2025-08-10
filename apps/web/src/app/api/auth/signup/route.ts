@@ -13,7 +13,8 @@ export async function POST(req: Request) {
     if (exists) return NextResponse.redirect(new URL('/signup?error=exists', req.url));
     const passwordHash = await hash(password, 10);
     await db.user.create({ data: { email, passwordHash, role: Role.LEARNER } });
-    return NextResponse.redirect(new URL('/api/auth/signin', req.url));
+    // Redirect to custom login with a friendly flag
+    return NextResponse.redirect(new URL('/login?signup=1', req.url));
   } catch {
     return NextResponse.redirect(new URL('/signup?error=1', req.url));
   }

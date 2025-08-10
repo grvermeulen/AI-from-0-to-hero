@@ -50,13 +50,13 @@ describe('POST /api/auth/signup', () => {
     expect(db.user.create).not.toHaveBeenCalled();
   });
 
-  it('creates user and redirects to sign-in on success', async () => {
+  it('creates user and redirects to login with success flag on success', async () => {
     (db.user.findUnique as any).mockResolvedValue(null);
     (db.user.create as any).mockResolvedValue({ id: 'new' });
     const req = makeFormRequest({ email: 'a@b.com', password: 'pw' });
     const res = await POST(req);
     expect(db.user.create).toHaveBeenCalled();
-    expect(res.headers.get('location')).toContain('/api/auth/signin');
+    expect(res.headers.get('location')).toContain('/login?signup=1');
   });
 });
 
