@@ -2,6 +2,7 @@ import NextAuth, { type NextAuthOptions, getServerSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { compare } from 'bcryptjs';
 import { db } from './db';
+import { offlineMode } from './env';
 import { z } from 'zod';
 
 function devFallbackUser(email: string, password: string) {
@@ -15,9 +16,8 @@ function devFallbackUser(email: string, password: string) {
 }
 
 export async function authorizeCredentials(email: string, password: string) {
-  // Fast dev fallback when DB URL is missing or failing locally
-  const dbConfigured = !!process.env.DATABASE_URL;
-  if (process.env.NODE_ENV !== 'production' && !dbConfigured) {
+  // Fast dev fallback in explicit offline mode
+  if (offlineMode()) {
     const u = devFallbackUser(email, password);
     if (u) return u;
   }

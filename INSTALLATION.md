@@ -30,6 +30,10 @@ pnpm db:seed
 ```
 pnpm dev
 # App will be on http://localhost:3000 (or 3001 if 3000 is in use)
+
+pnpm db:docker:start && pnpm db:env:docker && pnpm db:push && pnpm db:seed && pnpm dev
+# Make sure docker is started and it launch docker db & seed it with data, then the app will run on http://localhost:3000 using the db. 
+
 ```
 
 ### 4) Webhook and Agent automation (optional)

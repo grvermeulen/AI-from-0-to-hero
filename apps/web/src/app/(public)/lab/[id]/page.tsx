@@ -1,5 +1,6 @@
 import { getServerTrpcCaller } from '@/server/trpcClient';
 import { redirect } from 'next/navigation';
+import SubmitButton from '@/components/SubmitButton';
 
 type Params = { params: { id: string } };
 type SearchParams = { searchParams?: { submissionId?: string; error?: string } };
@@ -11,6 +12,9 @@ export default async function LabPage({ params, searchParams }: Params & SearchP
     'use server';
     const repoUrl = String(formData.get('repoUrl') || '');
     const code = String(formData.get('code') || '');
+    if (!repoUrl && !code) {
+      redirect(`/lab/${id}?error=missing`);
+    }
     const c = await getServerTrpcCaller();
     try {
       const res = await c.lab.submit({ labId: id, repoUrl: repoUrl || undefined, code: code || undefined });
@@ -26,6 +30,7 @@ export default async function LabPage({ params, searchParams }: Params & SearchP
     return (
       <main className="max-w-3xl mx-auto p-6">
         <h1 className="text-2xl font-bold">{lab.title}</h1>
+        <p className="mt-1 text-sm text-gray-600">Paste code or a repo URL and click Submit. You’ll get a submission id and status.</p>
         {searchParams?.submissionId && (
           <div className="mt-3 rounded border p-3 text-sm">
             <div>Submission: <span className="font-mono">{searchParams.submissionId}</span></div>
@@ -33,7 +38,9 @@ export default async function LabPage({ params, searchParams }: Params & SearchP
           </div>
         )}
         {searchParams?.error && (
-          <div className="mt-3 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800">Submission failed. Please login and try again.</div>
+          <div className="mt-3 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800">
+            {searchParams.error === 'missing' ? 'Please provide a repo URL or paste code.' : 'Submission failed. Please login and try again.'}
+          </div>
         )}
         <p className="mt-4 whitespace-pre-wrap text-gray-800">{lab.description}</p>
         <form action={submit} className="mt-6 rounded border p-4 grid gap-3">
@@ -46,7 +53,7 @@ export default async function LabPage({ params, searchParams }: Params & SearchP
             <span className="text-sm">Or paste code</span>
             <textarea name="code" rows={6} className="border rounded px-2 py-1" />
           </label>
-          <button type="submit" className="rounded bg-blue-600 px-3 py-1 text-white w-max">Submit</button>
+          <SubmitButton>Submit</SubmitButton>
         </form>
       </main>
     );

@@ -13,7 +13,7 @@ Environment variables:
 
 Local development:
 1. Start the web app: `pnpm --filter web dev`
-2. Expose your local server with a tunnel (ngrok or Cloudflare Tunnel), e.g. `ngrok http 3000`.
+2. Expose your local server with a tunnel (ngrok or Cloudflare Tunnel), e.g. run: `ngrok http 3000`.
 3. Configure a GitHub webhook (Repository Settings → Webhooks) or auto‑update it after each ngrok restart:
    - Payload URL: `https://<your-tunnel>/api/github/webhook`
    - Content type: `application/json`

@@ -3,6 +3,10 @@ import { createTRPCRouter, protectedProcedure } from '@/server/trpc';
 export const meRouter = createTRPCRouter({
   progress: protectedProcedure.query(async ({ ctx }) => {
     const userId = (ctx.session!.user as any).id as string;
+    // Dev fallback: if DB is not configured locally, return minimal defaults
+    if (!process.env.DATABASE_URL) {
+      return { xpTotal: 0, badgesCount: 0, badges: [], streakDays: 0, submissions: { passed: 0, failed: 0, pending: 0 } };
+    }
     const [xpEvents, badgesCount, badges, passed, failed, pending] = await Promise.all([
       ctx.db.xPEvent.findMany({ where: { userId }, select: { amount: true, createdAt: true } }),
       ctx.db.userBadge.count({ where: { userId } }),
