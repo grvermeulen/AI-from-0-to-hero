@@ -1,3 +1,11 @@
+# Tools Overview
+
+This document summarizes CLI helpers, webhooks, agent scripts, and MCP usage.
+
+- `pnpm agent:watch`: watches `.agent/inbox/` for webhook events and triggers actions
+- `pnpm agent:webhook:update`: updates GitHub webhook to current tunnel URL
+- `pnpm db:*`: helper scripts for local/docker DB setup
+
 ## Tooling and Workflow Guide
 
 This document summarizes the tools and automation used to build and operate this project.
@@ -68,6 +76,10 @@ Note: Some MCP integrations are used by the AI agent; for manual equivalents use
 - Unit tests: `pnpm --filter web test:ci` (Vitest)
 - Type check: `pnpm -r typecheck`
 - Build: `pnpm -r build` (Next.js)
+<<<<<<< HEAD
+=======
+- Run dev build on localhotst:3000 : pnpm && pnpm dev
+>>>>>>> origin/image
 
 ### CI/CD
 - GitHub Actions workflow lives under `.github/workflows/` (if present); CI runs typecheck/tests and builds

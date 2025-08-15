@@ -13,19 +13,34 @@
   "scripts": {
     "build": "pnpm -r build",
     "dev": "pnpm --filter web dev",
+    "dev:env": "node -e 'require(\"dotenv\").config(); const e=process.env; const mode=e.OFFLINE_MODE===\"1\"?\"offline\":\"db\"; console.log(`[env] mode=${mode} dbConfigured=${Boolean(e.DATABASE_URL)} nextAuthUrl=${e.NEXTAUTH_URL||\"\"}`)' && NEXT_PUBLIC_SHOW_ENV=1 NEXT_PUBLIC_OFFLINE_MODE=$OFFLINE_MODE pnpm --filter web dev",
     "dev:agents": "bash scripts/dev_agents.sh",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "agent:poll": "node .agent/poller.js",
     "agent:seed-labels": "node .agent/seed-labels.js",
-    "agent:watch": "node .agent/watch-inbox.js"
+    "agent:watch": "node .agent/watch-inbox.js",
+    "agent:webhook:update": "node .agent/update-webhook.js",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "db:env:docker": "bash scripts/db.sh env-docker",
+    "db:env:url": "bash -c 'DB_URL=${DB_URL} scripts/db.sh env-url'",
+    "db:docker:start": "bash scripts/db.sh docker-start",
+    "db:docker:stop": "bash scripts/db.sh docker-stop",
+    "db:push": "npx prisma db push",
+    "db:seed": "tsx prisma/seed.ts"
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
-    "prisma": "6.13.0"
+    "prisma": "6.13.0",
+    "tsx": "^4.16.2",
+    "@playwright/test": "^1.46.0",
+    "@modelcontextprotocol/sdk": "^1.2.0",
+    "dotenv": "^16.4.5"
   },
   "dependencies": {
-    "@prisma/client": "6.13.0"
+    "@prisma/client": "6.13.0",
+    "bcryptjs": "^2.4.3"
   }
 }

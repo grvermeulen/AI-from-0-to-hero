@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use client";
 import { useState } from "react";
 
@@ -22,6 +23,18 @@ export default function SignUpPage() {
         Already have an account? <a className="underline" href="/api/auth/signin">Sign in</a>
       </p>
     </main>
+=======
+import { Suspense } from 'react';
+import SignUpClient from './SignUpClient';
+
+export const dynamic = 'force-dynamic';
+
+export default function SignUpPage() {
+  return (
+    <Suspense>
+      <SignUpClient />
+    </Suspense>
+>>>>>>> origin/image
   );
 }
 

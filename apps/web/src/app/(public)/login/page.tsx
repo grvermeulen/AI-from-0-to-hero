@@ -1,10 +1,11 @@
-"use client";
-import { useState } from 'react';
+import { Suspense } from 'react';
+import LoginClient from './LoginClient';
+
+export const dynamic = 'force-dynamic';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   return (
+<<<<<<< HEAD
     <main className="max-w-md mx-auto p-6">
       <h1 className="text-2xl font-bold">Login</h1>
       <form className="mt-4 grid gap-3" action="/api/auth/callback/credentials" method="post">
@@ -21,6 +22,11 @@ export default function LoginPage() {
       </form>
       <p className="mt-4 text-sm">No account? <a className="underline" href="/signup">Sign up</a></p>
     </main>
+=======
+    <Suspense>
+      <LoginClient />
+    </Suspense>
+>>>>>>> origin/image
   );
 }
 
