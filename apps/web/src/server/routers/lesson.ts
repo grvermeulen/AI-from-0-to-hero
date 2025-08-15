@@ -15,7 +15,13 @@ export const lessonRouter = createTRPCRouter({
 
   complete: protectedProcedure
     .input(z.object({ lessonId: z.string() }))
-    .mutation(async () => {
+    .mutation(async ({ ctx, input }) => {
+      const userId = (ctx.session!.user as any).id as string;
+      try {
+        await ctx.db.xPEvent.create({
+          data: { userId, kind: 'lesson_complete' as any, amount: 10 },
+        });
+      } catch {}
       return { ok: true } as const;
     }),
 });

@@ -6,6 +6,7 @@ import { meRouter } from './me';
 import { quizRouter } from './quiz';
 import { labRouter } from './lab';
 import { userRouter } from './user';
+import { leaderboardRouter } from './leaderboard';
 
 export const appRouter = createTRPCRouter({
   lesson: lessonRouter,
@@ -15,6 +16,7 @@ export const appRouter = createTRPCRouter({
   quiz: quizRouter,
   lab: labRouter,
   user: userRouter,
+  leaderboard: leaderboardRouter,
 });
 
 export type AppRouter = typeof appRouter;
