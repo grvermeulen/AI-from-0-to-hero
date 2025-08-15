@@ -1,10 +1,7 @@
 import { getServerTrpcCaller } from '@/server/trpcClient';
 import { remark } from 'remark';
 import html from 'remark-html';
-<<<<<<< HEAD
-=======
 import PromptWidget from '@/components/PromptWidget';
->>>>>>> origin/image
 
 type Params = { params: { slug: string } };
 
@@ -27,10 +24,7 @@ export default async function LessonPage({ params }: Params) {
     <main className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-bold">{data.title}</h1>
       <article className="prose mt-4" dangerouslySetInnerHTML={{ __html: contentHtml }} />
-<<<<<<< HEAD
-=======
       <PromptWidget />
->>>>>>> origin/image
     </main>
   );
 }

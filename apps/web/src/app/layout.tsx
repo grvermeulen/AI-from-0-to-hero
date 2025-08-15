@@ -13,19 +13,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body>
         <header className="border-b">
-<<<<<<< HEAD
-=======
           <EnvBanner />
->>>>>>> origin/image
           <div className="mx-auto max-w-5xl p-4 flex items-center justify-between">
             <Link href="/" className="font-semibold">AI‑First QA</Link>
             <nav className="flex gap-4 text-sm">
               <Link href="/catalog" className="underline">Catalog</Link>
               <Link href="/profile" className="underline">Profile</Link>
-<<<<<<< HEAD
-=======
               <Link href="/leaderboard" className="underline">Leaderboards</Link>
->>>>>>> origin/image
               <Link href="/login" className="underline">Login</Link>
               <Link href="/signup" className="underline">Sign up</Link>
             </nav>

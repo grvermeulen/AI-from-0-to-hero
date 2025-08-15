@@ -39,42 +39,24 @@ describe('POST /api/auth/signup', () => {
     const req = makeFormRequest({ email: '', password: '' });
     const res = await POST(req);
     expect(res.status).toBeGreaterThanOrEqual(300);
-<<<<<<< HEAD
-    expect(res.headers.get('location')).toContain('/signup?error=1');
-=======
     expect(res.headers.get('location')).toContain('/signup?error=missing');
->>>>>>> origin/image
   });
 
   it('redirects with exists when user already exists', async () => {
     (db.user.findUnique as any).mockResolvedValue({ id: 'u1' });
-<<<<<<< HEAD
-    const req = makeFormRequest({ email: 'a@b.com', password: 'pw' });
-=======
-    const req = makeFormRequest({ email: 'a@b.com', password: 'goodpass1' });
->>>>>>> origin/image
+    const req = makeFormRequest({ email: 'a@b.com', password: 'Goodpass1!' });
     const res = await POST(req);
     expect(res.headers.get('location')).toContain('/signup?error=exists');
     expect(db.user.create).not.toHaveBeenCalled();
   });
 
-<<<<<<< HEAD
-  it('creates user and redirects to sign-in on success', async () => {
-    (db.user.findUnique as any).mockResolvedValue(null);
-    (db.user.create as any).mockResolvedValue({ id: 'new' });
-    const req = makeFormRequest({ email: 'a@b.com', password: 'pw' });
-    const res = await POST(req);
-    expect(db.user.create).toHaveBeenCalled();
-    expect(res.headers.get('location')).toContain('/api/auth/signin');
-=======
   it('creates user and redirects to login with success flag on success', async () => {
     (db.user.findUnique as any).mockResolvedValue(null);
     (db.user.create as any).mockResolvedValue({ id: 'new' });
-    const req = makeFormRequest({ email: 'a@b.com', password: 'goodpass1' });
+    const req = makeFormRequest({ email: 'a@b.com', password: 'Goodpass1!' });
     const res = await POST(req);
     expect(db.user.create).toHaveBeenCalled();
     expect(res.headers.get('location')).toContain('/login?signup=1');
->>>>>>> origin/image
   });
 });
 
