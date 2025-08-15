@@ -68,6 +68,7 @@ Note: Some MCP integrations are used by the AI agent; for manual equivalents use
 - Unit tests: `pnpm --filter web test:ci` (Vitest)
 - Type check: `pnpm -r typecheck`
 - Build: `pnpm -r build` (Next.js)
+- Run dev build on localhotst:3000 : pnpm && pnpm dev
 
 ### CI/CD
 - GitHub Actions workflow lives under `.github/workflows/` (if present); CI runs typecheck/tests and builds

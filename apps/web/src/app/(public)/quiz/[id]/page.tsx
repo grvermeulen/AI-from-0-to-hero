@@ -1,5 +1,7 @@
 import { getServerTrpcCaller } from '@/server/trpcClient';
 import { redirect } from 'next/navigation';
+import SubmitButton from '@/components/SubmitButton';
+import QuizQuestions from '@/components/QuizQuestions';
 
 type Params = { params: { id: string } };
 
@@ -30,6 +32,7 @@ export default async function QuizPage({ params, searchParams }: Params & Search
     return (
       <main className="max-w-3xl mx-auto p-6">
         <h1 className="text-2xl font-bold">{quiz.title}</h1>
+        <p className="mt-1 text-sm text-gray-600">Answer all questions and click Submit. You’ll see a pass/fail banner with your score.</p>
         {searchParams?.score !== undefined && (
           <div className="mt-3 rounded border p-3 text-sm">
             <div>Score: <span className="font-semibold">{searchParams.score}</span></div>
@@ -40,26 +43,8 @@ export default async function QuizPage({ params, searchParams }: Params & Search
           <div className="mt-3 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800">Submission failed. Please login and try again.</div>
         )}
         <form action={submit} className="mt-4">
-          <ol className="grid gap-4 list-decimal pl-6">
-          {quiz.questions.map((q: any) => (
-            <li key={q.id}>
-              <div className="font-semibold">{q.prompt}</div>
-              {q.options && (
-                <ul className="mt-2 list-disc pl-5 text-sm">
-                  {(JSON.parse(q.options) as string[]).map((opt, i) => (
-                    <li key={i}>
-                      <label className="inline-flex items-center gap-2">
-                        <input type="radio" name={`q_${q.id}`} value={opt} required />
-                        <span>{opt}</span>
-                      </label>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-          </ol>
-          <button type="submit" className="mt-6 rounded bg-blue-600 px-3 py-1 text-white">Submit</button>
+          <QuizQuestions quizId={id} questions={quiz.questions as any} />
+          <SubmitButton>Submit</SubmitButton>
         </form>
       </main>
     );
