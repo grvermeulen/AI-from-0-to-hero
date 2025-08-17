@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-. "$(dirname "$0")/_/husky.sh"
+# Husky v10 does not require sourcing husky.sh
 
 printf "[pre-push] Typechecking...\n"
 pnpm -r typecheck || exit 1
