@@ -16,7 +16,7 @@ function devFallbackUser(email: string, password: string) {
 }
 
 export async function authorizeCredentials(email: string, password: string) {
-  // Fast dev fallback in explicit offline mode
+  // Fast dev fallback in explicit offline mode or when env creds set and not production
   if (offlineMode()) {
     const u = devFallbackUser(email, password);
     if (u) return u;

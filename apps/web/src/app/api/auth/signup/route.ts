@@ -15,6 +15,7 @@ export async function POST(req: Request) {
       if (rl.retryAfter) res.headers.set('Retry-After', String(rl.retryAfter));
       return res;
     }
+
     const form = await req.formData();
     const email = String(form.get('email') || '').trim();
     const password = String(form.get('password') || '');
@@ -38,6 +39,7 @@ export async function POST(req: Request) {
       const code = issues.includes('email') ? 'invalid_email' : 'weak_password';
       return NextResponse.redirect(new URL(`/signup?error=${code}`, req.url));
     }
+
     const exists = await db.user.findUnique({ where: { email } });
     if (exists) return NextResponse.redirect(new URL('/signup?error=exists', req.url));
     const passwordHash = await hash(password, 10);
