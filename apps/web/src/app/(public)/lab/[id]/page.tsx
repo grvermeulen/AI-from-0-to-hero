@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import SubmitButton from '@/components/SubmitButton';
 
 type Params = { params: { id: string } };
+
 type SearchParams = { searchParams?: { submissionId?: string; error?: string } };
 
 export default async function LabPage({ params, searchParams }: Params & SearchParams) {

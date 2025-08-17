@@ -30,3 +30,4 @@ Notes:
 - If no `GITHUB_WEBHOOK_SECRET` is set and `NODE_ENV !== 'production'`, signature verification is skipped for convenience.
 - Forwarding includes `x-github-event` and `x-github-delivery` headers and an optional `x-agent-signature-256` HMAC.
 - For posting PR review comments automatically, export `GITHUB_TOKEN` before running the watcher/reviewer.
+ - For posting PR review comments automatically, export `GITHUB_TOKEN` before running the watcher/reviewer.
