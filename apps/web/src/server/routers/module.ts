@@ -38,7 +38,7 @@ export const moduleRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const track = await ctx.db.track.findUnique({ where: { slug: input.trackSlug } });
       if (!track) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Track slug does not exist' });
-      const { id, trackSlug, ...rest } = input as any;
+      const { id, trackSlug, ...rest } = input;
       const data = { ...rest, trackId: track.id };
       const result = await ctx.db.module.upsert({
         where: id ? { id } : { slug: input.slug },

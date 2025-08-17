@@ -38,8 +38,10 @@ export async function suggestDraftForPrompt(prompt: string, opts: AiSuggestOptio
       // Fallback in case of API error
       return `Draft (fallback):\n- ${prompt.slice(0, 200)}\n- Add at least 3 assertions and one negative case.`;
     }
-    const data = (await resp.json()) as any;
-    const text = data?.choices?.[0]?.message?.content?.trim();
+    const data: {
+      choices?: Array<{ message?: { content?: string | null } }>;
+    } = await resp.json();
+    const text = data.choices?.[0]?.message?.content?.trim();
     return text || `Draft (empty): ${prompt.slice(0, 120)}`;
   } catch {
     return `Draft (error):\n- ${prompt.slice(0, 200)}\n- Include status/schema/negatives.`;

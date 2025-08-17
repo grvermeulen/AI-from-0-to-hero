@@ -8,7 +8,7 @@ type Question = {
   options?: string | null;
 };
 
-export default function QuizQuestions({ quizId, questions }: { quizId: string; questions: Question[] }) {
+export default function QuizQuestions({ quizId, questions }: { quizId: string; questions: ReadonlyArray<Question> }) {
   const parsedOptions = useMemo(
     () =>
       questions.map((q) => ({

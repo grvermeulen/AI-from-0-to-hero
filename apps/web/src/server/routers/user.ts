@@ -21,7 +21,7 @@ export const userRouter = createTRPCRouter({
   promote: adminProcedure
     .input(z.object({ userId: z.string(), role: z.enum(['ADMIN', 'STAFF', 'LEARNER']) }))
     .mutation(async ({ ctx, input }) => {
-      const updated = await ctx.db.user.update({ where: { id: input.userId }, data: { role: input.role as any } });
+      const updated = await ctx.db.user.update({ where: { id: input.userId }, data: { role: input.role } });
       return { id: updated.id, role: updated.role };
     }),
 });

@@ -43,7 +43,7 @@ export default async function QuizPage({ params, searchParams }: Params & Search
           <div className="mt-3 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800">Submission failed. Please login and try again.</div>
         )}
         <form action={submit} className="mt-4">
-          <QuizQuestions quizId={id} questions={quiz.questions as any} />
+          <QuizQuestions quizId={id} questions={quiz.questions} />
           <SubmitButton>Submit</SubmitButton>
         </form>
       </main>

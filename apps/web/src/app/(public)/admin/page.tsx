@@ -2,7 +2,7 @@ import { getSession } from '@/server/auth';
 
 export default async function AdminPage() {
   const session = await getSession();
-  const role = (session?.user as any)?.role;
+  const role = session?.user?.role;
   if (role !== 'ADMIN' && role !== 'STAFF') {
     return (
       <main className="max-w-2xl mx-auto p-6">
@@ -14,7 +14,7 @@ export default async function AdminPage() {
   return (
     <main className="max-w-2xl mx-auto p-6">
       <h1 className="text-2xl font-bold">Admin</h1>
-      <p className="mt-2">Welcome, {(session?.user as any)?.email}</p>
+      <p className="mt-2">Welcome, {session?.user?.email}</p>
     </main>
   );
 }
