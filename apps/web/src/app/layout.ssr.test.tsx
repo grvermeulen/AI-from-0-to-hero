@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 
-vi.mock('../styles/globals.css', () => ({}), { virtual: true });
+vi.mock('../styles/globals.css', () => ({} as any));
 
 describe('RootLayout SSR', () => {
   beforeEach(() => {
