@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
+// Ensure React is available for classic JSX runtime during SSR in tests
+// Some transforms may emit React.createElement; expose React on global
+// to avoid ReferenceError in CI environment.
+(globalThis as any).React = React;
 import { renderToString } from 'react-dom/server';
 
 vi.mock('../styles/globals.css', () => ({} as any));
