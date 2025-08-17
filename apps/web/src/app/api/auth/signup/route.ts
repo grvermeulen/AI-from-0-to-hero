@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
-import { Role } from '@prisma/client';
+type Role = 'ADMIN' | 'STAFF' | 'LEARNER';
 import { hash } from 'bcryptjs';
 import { z } from 'zod';
 import { checkRateLimit, getClientIp } from '@/server/rateLimit';
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
       return NextResponse.redirect(new URL('/signup?error=exists', req.url));
     }
     const passwordHash = await hash(password, 10);
-    await db.user.create({ data: { email, passwordHash, role: Role.LEARNER } });
+    await db.user.create({ data: { email, passwordHash, role: 'LEARNER' as Role } });
     // Redirect to custom login with a friendly flag
     if (wantsJson(req)) {
       log.info({ code: 'CREATED' }, 'User created');

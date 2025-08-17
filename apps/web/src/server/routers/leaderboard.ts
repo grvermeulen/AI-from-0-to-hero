@@ -20,11 +20,11 @@ export const leaderboardRouter = createTRPCRouter({
       });
 
       const users = await ctx.db.user.findMany({
-        where: { id: { in: groups.map((g) => g.userId) } },
+        where: { id: { in: groups.map((g: { userId: string }) => g.userId) } },
         include: { profile: true },
       });
-      const idToName = new Map(users.map((u) => [u.id, u.profile?.displayName || u.email]));
-      return groups.map((g, idx: number) => ({ rank: idx + 1, userId: g.userId, label: idToName.get(g.userId) || g.userId, xp: g._sum.amount || 0 }));
+      const idToName = new Map(users.map((u: { id: string; profile: { displayName?: string | null } | null; email: string | null }) => [u.id, u.profile?.displayName || u.email]));
+      return groups.map((g: { userId: string; _sum: { amount: number | null } }, idx: number) => ({ rank: idx + 1, userId: g.userId, label: (idToName.get(g.userId) as string | undefined) || g.userId, xp: g._sum.amount || 0 }));
     }),
 });
 

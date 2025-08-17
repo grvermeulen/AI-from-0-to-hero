@@ -28,7 +28,7 @@ export const quizRouter = createTRPCRouter({
       });
       if (!quiz) throw new TRPCError({ code: 'NOT_FOUND', message: 'Quiz not found' });
       // Hide answers when starting quiz
-      const questions = quiz.questions.map((q) => ({ id: q.id, kind: q.kind, prompt: q.prompt, options: q.options }));
+      const questions = quiz.questions.map((q: any) => ({ id: q.id, kind: q.kind, prompt: q.prompt, options: q.options }));
       return { id: quiz.id, title: quiz.title, questions };
     }),
 
