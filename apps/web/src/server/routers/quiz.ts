@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, protectedProcedure, resolveDbUserIdFromSession } from '@/server/trpc';
 import { offlineMode } from '@/server/env';
+import { SubmissionStatus } from '@prisma/client';
 
 export const quizRouter = createTRPCRouter({
   start: protectedProcedure
@@ -33,7 +34,10 @@ export const quizRouter = createTRPCRouter({
     .input(
       z.object({
         quizId: z.string(),
-        answers: z.record(z.string(), z.string()).default({}),
+        answers: z
+          .record(z.string().min(1), z.string().max(512))
+          .refine((rec) => Object.keys(rec).every((k) => !k.includes('..') && !k.includes('/')), 'invalid_keys')
+          .default({}),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -49,7 +53,7 @@ export const quizRouter = createTRPCRouter({
           if (q.answer && input.answers[q.id] && input.answers[q.id] === q.answer) correct++;
         }
         const score = Math.round((correct / total) * 100);
-        const status = score >= 80 ? ('PASSED' as const) : ('FAILED' as const);
+        const status: SubmissionStatus = score >= 80 ? SubmissionStatus.PASSED : SubmissionStatus.FAILED;
         return { id: 'stub-submission', status, score };
       }
       const quiz = await ctx.db.quiz.findUnique({ where: { id: input.quizId }, include: { questions: true } });
@@ -61,21 +65,21 @@ export const quizRouter = createTRPCRouter({
         if (q.answer && input.answers[q.id] && input.answers[q.id] === q.answer) correct++;
       }
       const score = Math.round((correct / total) * 100);
-      const status = score >= 80 ? ('PASSED' as const) : ('FAILED' as const);
+      const status: SubmissionStatus = score >= 80 ? SubmissionStatus.PASSED : SubmissionStatus.FAILED;
 
       const submission = await ctx.db.submission.create({
         data: {
           userId,
           quizId: quiz.id,
           answers: JSON.stringify(input.answers),
-          status: status as any,
+          status,
           score,
         },
       });
       try {
-        await ctx.db.xPEvent.create({ data: { userId, kind: 'quiz_submit' as any, amount: 10 } });
-        if (status === 'PASSED') {
-          await ctx.db.xPEvent.create({ data: { userId, kind: 'quiz_pass' as any, amount: 25 } });
+        await ctx.db.xPEvent.create({ data: { userId, kind: 'quiz_submit', amount: 10 } });
+        if (status === SubmissionStatus.PASSED) {
+          await ctx.db.xPEvent.create({ data: { userId, kind: 'quiz_pass', amount: 25 } });
         }
       } catch {}
       return { id: submission.id, status, score };

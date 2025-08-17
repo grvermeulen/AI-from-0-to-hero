@@ -6,7 +6,7 @@ AI‑First QA Training Platform — Build Progress
 - [x] 3. Implement Auth (NextAuth credentials), RBAC guards
 - [x] 4. Add Prisma models + migrations; seed minimal tracks/modules
 - [x] 5. Wire public/authed/admin tRPC routers
-- [ ] 6. Build Home, Catalog, Lesson, Lab Runner, Quiz, Profile screens
+- [x] 6. Build Home, Catalog, Lesson, Lab Runner, Quiz, Profile screens
 - [ ] 7. Add XP engine + badges + leaderboards
 - [ ] 8. Integrate AI prompt widgets; ReadyAPI → Playwright template
 - [ ] 9. Testing: unit/integration/e2e; Axe + Lighthouse
@@ -20,6 +20,41 @@ AI‑First QA Training Platform — Build Progress
 Environment note: requires Node >=20 (see `.nvmrc`). If your Node is older, run `nvm install 20 && nvm use 20`.
 
 Last updated: Steps 1–5 complete (scaffold, tRPC baseline, Auth+RBAC, Prisma schema/seed, routers). Starting Step 6: initial UI screens (Catalog, Module, Lesson).
+
+---
+
+# PR #9 follow-ups (TODO)
+
+Source: review notes on [PR #9](https://github.com/grvermeulen/AI-from-0-to-hero/pull/9)
+
+- **Security & Auth**
+  - [ ] Strengthen password validation in `apps/web/src/app/api/auth/signup/route.ts` (length, uppercase, number, special char via Zod)
+  - [ ] Move dev fallback credentials out of source into env vars in `apps/web/src/server/auth.ts` (guard with `NODE_ENV !== 'production'`); document in `.env.example`
+  - [ ] Add rate limiting for auth endpoints (login/signup) via middleware (IP + user buckets)
+  - [ ] Improve error handling in signup route with specific error mapping and safe responses
+
+- **Quiz/Lab data integrity**
+  - [ ] Validate submitted answer shapes in `apps/web/src/server/routers/quiz.ts` (Zod schemas), and sanitize inputs
+  - [ ] Sanitize lab submission fields (`repoUrl`, `code`) before persistence
+
+- **Type safety**
+  - [ ] Replace unsafe `any` assertions in `apps/web/src/server/routers/quiz.ts` with proper types (typed session, `SubmissionStatus` enum)
+  - [ ] Add explicit session typing in `TRPCContext` and NextAuth module augmentation for `session.user.id`
+
+- **Database**
+  - [ ] Add indexes for frequent queries (e.g., `Submission.userId`, `Submission.createdAt`, `XPEvent.userId`; review slug/email indexes)
+  - [ ] Generate migration and update seed if needed
+
+- **Tests**
+  - [ ] Unit tests for XP calculation and quiz scoring
+  - [ ] Integration tests for signup failures and rate limiting behavior
+
+- **Observability**
+  - [ ] Standardize error codes and structured logging with correlation IDs for auth/quiz routes
+
+- **Docs**
+  - [ ] Update `SECURITY.md` with password policy and rate limiting details
+  - [ ] Update `.env.example` to include dev-auth toggles/flags and remove hardcoded creds
 
 ---
 
