@@ -17,7 +17,7 @@ export const quizRouter = createTRPCRouter({
             { id: 'q1', kind: 'MC', prompt: '2 + 2 = ?', options: JSON.stringify(['3', '4', '5']) },
             { id: 'q2', kind: 'MC', prompt: 'Capital of France?', options: JSON.stringify(['Paris', 'Rome', 'Berlin']) },
           ],
-        } as any;
+        } as const;
         return { id: stub.id, title: stub.title, questions: stub.questions };
       }
       const quiz = await ctx.db.quiz.findUnique({

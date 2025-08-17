@@ -17,14 +17,14 @@ export const leaderboardRouter = createTRPCRouter({
         ...(since ? { where: { createdAt: { gte: since } } } : {}),
         orderBy: { _sum: { amount: 'desc' } },
         take: input.limit,
-      } as any);
+      });
 
       const users = await ctx.db.user.findMany({
-        where: { id: { in: groups.map((g: any) => g.userId) } },
+        where: { id: { in: groups.map((g) => g.userId) } },
         include: { profile: true },
       });
-      const idToName = new Map(users.map((u: any) => [u.id, u.profile?.displayName || u.email]));
-      return groups.map((g: any, idx: number) => ({ rank: idx + 1, userId: g.userId, label: idToName.get(g.userId) || g.userId, xp: g._sum.amount || 0 }));
+      const idToName = new Map(users.map((u) => [u.id, u.profile?.displayName || u.email]));
+      return groups.map((g, idx: number) => ({ rank: idx + 1, userId: g.userId, label: idToName.get(g.userId) || g.userId, xp: g._sum.amount || 0 }));
     }),
 });
 

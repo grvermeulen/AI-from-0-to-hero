@@ -16,7 +16,7 @@ export default async function LessonPage({ params }: Params) {
   try {
     const caller = await getServerTrpcCaller();
     const lesson = await caller.lesson.get({ slug });
-    data = { title: (lesson as any).title, contentMd: (lesson as any).contentMd };
+    data = { title: lesson.title, contentMd: lesson.contentMd };
   } catch {}
   const processed = await remark().use(html).process(data.contentMd);
   const contentHtml = processed.toString();

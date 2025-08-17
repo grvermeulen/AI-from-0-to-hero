@@ -2,7 +2,7 @@ import { createTRPCRouter, protectedProcedure } from '@/server/trpc';
 
 export const meRouter = createTRPCRouter({
   progress: protectedProcedure.query(async ({ ctx }) => {
-    const userId = (ctx.session!.user as any).id as string;
+    const userId = ctx.session!.user!.id;
     // Dev fallback: if DB is not configured locally, return minimal defaults
     if (!process.env.DATABASE_URL) {
       return { xpTotal: 0, badgesCount: 0, badges: [], streakDays: 0, submissions: { passed: 0, failed: 0, pending: 0 } };
@@ -15,9 +15,9 @@ export const meRouter = createTRPCRouter({
         include: { badge: true },
         orderBy: { earnedAt: 'desc' },
       }),
-      ctx.db.submission.count({ where: { userId, status: 'PASSED' as any } }),
-      ctx.db.submission.count({ where: { userId, status: 'FAILED' as any } }),
-      ctx.db.submission.count({ where: { userId, status: 'PENDING' as any } }),
+      ctx.db.submission.count({ where: { userId, status: 'PASSED' } }),
+      ctx.db.submission.count({ where: { userId, status: 'FAILED' } }),
+      ctx.db.submission.count({ where: { userId, status: 'PENDING' } }),
     ]);
     const xpTotal = xpEvents.reduce((sum, e) => sum + (e.amount ?? 0), 0);
     // Streak calculation: consecutive days with any XP, ending today

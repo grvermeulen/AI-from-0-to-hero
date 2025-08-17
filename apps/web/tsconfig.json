@@ -25,7 +25,8 @@
       ]
     },
     "types": [
-      "node"
+      "node",
+      "next-auth"
     ],
     "allowJs": true,
     "incremental": true,

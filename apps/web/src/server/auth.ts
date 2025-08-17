@@ -12,7 +12,7 @@ function devFallbackUser(email: string, password: string) {
   if (process.env.NODE_ENV === 'production') return null;
   const match = email === devEmail && password === devPassword;
   if (!match) return null;
-  return { id: 'dev-user', email, role: 'LEARNER' as const } as any;
+  return { id: 'dev-user', email, role: 'LEARNER' as const };
 }
 
 export async function authorizeCredentials(email: string, password: string) {
@@ -26,7 +26,7 @@ export async function authorizeCredentials(email: string, password: string) {
     if (!user) return null;
     const ok = await compare(password, user.passwordHash);
     if (!ok) return null;
-    return { id: user.id, email: user.email, role: user.role } as any;
+    return { id: user.id, email: user.email, role: user.role };
   } catch (e) {
     const u = devFallbackUser(email, password);
     if (u) return u;
@@ -56,14 +56,14 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as any).role;
+        token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).id = token.sub;
-        (session.user as any).role = (token as any).role;
+        if (token.sub) session.user.id = token.sub;
+        session.user.role = token.role;
       }
       return session;
     },
