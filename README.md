@@ -13,6 +13,9 @@ AI‑First QA Training Platform — Build Progress
 - [ ] 10. Observability: pino logs; healthcheck; Sentry (optional)
 - [ ] 11. CI/CD with GitHub Actions + Railway; migrations on boot
 - [ ] 12. Docs: ARCHITECTURE, SECURITY, ADRs; admin provisioning
+  - [ ] Security hardening follow-ups:
+    - [ ] Rate limiting: add Redis-backed buckets for multi-instance deployments (current: in-memory, single-instance)
+    - [ ] Signup password UI: show clear requirement hints/messages matching server-side validation
 
 Environment note: requires Node >=20 (see `.nvmrc`). If your Node is older, run `nvm install 20 && nvm use 20`.
 
