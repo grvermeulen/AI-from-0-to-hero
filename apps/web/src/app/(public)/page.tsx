@@ -6,6 +6,11 @@ export default function HomePage() {
         <p className="mt-4 text-muted-foreground">
           Gamified online training to upskill testers into AI‑assisted Quality Engineers.
         </p>
+        <nav className="mt-8 grid gap-2 justify-center">
+          <a className="underline" href="/catalog">Browse tracks</a>
+          <a className="underline" href="/profile">My profile</a>
+          <a className="underline" href="/login">Login</a>
+        </nav>
       </div>
     </main>
   );
