@@ -82,16 +82,6 @@ async function main() {
     update: {},
   });
 
-<<<<<<< HEAD
-  // Dev test user: username/email "QA" with password "QA"
-  await db.user.upsert({
-    where: { email: 'QA' },
-    update: {},
-    create: {
-      email: 'QA',
-      passwordHash: hashSync('QA', 10),
-      role: Role.USER,
-=======
   // AI-Augmented track core module + lessons, quiz, and lab
   const aiModule = await db.module.upsert({
     where: { slug: 'ai-aug-core' },
@@ -167,7 +157,6 @@ async function main() {
       email: 'grvermeulen@gmail.com',
       passwordHash: hashSync('QA', 10),
       role: Role.LEARNER,
->>>>>>> origin/image
     },
   });
 }

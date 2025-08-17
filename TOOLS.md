@@ -47,6 +47,8 @@ Package scripts:
 - `pnpm agent:poll` → run the issue poller
 - `pnpm agent:watch` → start the inbox watcher (reacts to webhook payloads)
 - `pnpm agent:seed-labels` → seed labels on the GitHub repo
+- Run dev build on localhost:3000: `pnpm && pnpm dev`
+
 Manual review runner usage:
 - From payload file: `node .agent/review-pr.js .agent/inbox/<payload>.json`
 - From PR number: `PR_NUMBER=5 node .agent/review-pr.js`
@@ -76,10 +78,6 @@ Note: Some MCP integrations are used by the AI agent; for manual equivalents use
 - Unit tests: `pnpm --filter web test:ci` (Vitest)
 - Type check: `pnpm -r typecheck`
 - Build: `pnpm -r build` (Next.js)
-<<<<<<< HEAD
-=======
-- Run dev build on localhotst:3000 : pnpm && pnpm dev
->>>>>>> origin/image
 
 ### CI/CD
 - GitHub Actions workflow lives under `.github/workflows/` (if present); CI runs typecheck/tests and builds

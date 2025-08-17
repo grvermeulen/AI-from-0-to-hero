@@ -21,6 +21,7 @@
     "agent:poll": "node .agent/poller.js",
     "agent:seed-labels": "node .agent/seed-labels.js",
     "agent:watch": "node .agent/watch-inbox.js",
+    "agent:review": "node .agent/review-pr.js",
     "agent:webhook:update": "node .agent/update-webhook.js",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
