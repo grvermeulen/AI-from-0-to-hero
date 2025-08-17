@@ -3,6 +3,7 @@ import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, protectedProcedure, resolveDbUserIdFromSession } from '@/server/trpc';
 import { offlineMode } from '@/server/env';
 import { SubmissionStatus } from '@prisma/client';
+import { recordXpEvent } from '@/server/xp';
 
 export const quizRouter = createTRPCRouter({
   start: protectedProcedure
@@ -76,12 +77,10 @@ export const quizRouter = createTRPCRouter({
           score,
         },
       });
-      try {
-        await ctx.db.xPEvent.create({ data: { userId, kind: 'quiz_submit', amount: 10 } });
-        if (status === SubmissionStatus.PASSED) {
-          await ctx.db.xPEvent.create({ data: { userId, kind: 'quiz_pass', amount: 25 } });
-        }
-      } catch {}
+      await recordXpEvent(ctx, { userId, kind: 'quiz_submit', amount: 10 });
+      if (status === SubmissionStatus.PASSED) {
+        await recordXpEvent(ctx, { userId, kind: 'quiz_pass', amount: 25 });
+      }
       return { id: submission.id, status, score };
     }),
 });

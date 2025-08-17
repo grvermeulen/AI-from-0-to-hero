@@ -7,7 +7,7 @@ export const meRouter = createTRPCRouter({
     if (!process.env.DATABASE_URL) {
       return { xpTotal: 0, badgesCount: 0, badges: [], streakDays: 0, submissions: { passed: 0, failed: 0, pending: 0 } };
     }
-    const [xpEvents, badgesCount, badges, passed, failed, pending] = await Promise.all([
+    const [xpEvents, badgesCount, badges, passed, failed, pending, recentSubs] = await Promise.all([
       ctx.db.xPEvent.findMany({ where: { userId }, select: { amount: true, createdAt: true } }),
       ctx.db.userBadge.count({ where: { userId } }),
       ctx.db.userBadge.findMany({
@@ -18,6 +18,7 @@ export const meRouter = createTRPCRouter({
       ctx.db.submission.count({ where: { userId, status: 'PASSED' } }),
       ctx.db.submission.count({ where: { userId, status: 'FAILED' } }),
       ctx.db.submission.count({ where: { userId, status: 'PENDING' } }),
+      ctx.db.submission.findMany({ where: { userId }, orderBy: { createdAt: 'desc' }, take: 5, select: { id: true, status: true, score: true, createdAt: true } }),
     ]);
     const xpTotal = xpEvents.reduce((sum, e) => sum + (e.amount ?? 0), 0);
     // Streak calculation: consecutive days with any XP, ending today
@@ -36,6 +37,7 @@ export const meRouter = createTRPCRouter({
       badges: badges.map((b) => ({ id: b.badge.id, name: b.badge.name, icon: b.badge.icon, earnedAt: b.earnedAt })),
       streakDays,
       submissions: { passed, failed, pending },
+      recentSubmissions: recentSubs,
     };
   }),
 });

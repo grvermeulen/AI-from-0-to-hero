@@ -3,6 +3,7 @@ import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, protectedProcedure, resolveDbUserIdFromSession } from '@/server/trpc';
 import { offlineMode } from '@/server/env';
 import { SubmissionStatus } from '@prisma/client';
+import { recordXpEvent } from '@/server/xp';
 
 function sanitizeCode(input: string): string {
   // Remove control chars except tabs/newlines/carriage returns; trim excessive length
@@ -43,7 +44,8 @@ export const labRouter = createTRPCRouter({
       // Sanitize and enforce limits
       const codeSanitized = input.code ? sanitizeCode(input.code) : undefined;
       if (codeSanitized && codeSanitized.length > 10000) {
-        throw new TRPCError({ code: 'BAD_REQUEST', message: 'code_too_large' });
+        // Use 413 semantics via custom code in message; tRPC maps to 400. Clients can branch on message/code.
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'PAYLOAD_TOO_LARGE' });
       }
       const created = await ctx.db.submission.create({
         data: {
@@ -54,9 +56,7 @@ export const labRouter = createTRPCRouter({
           status: SubmissionStatus.PENDING,
         },
       });
-      try {
-        await ctx.db.xPEvent.create({ data: { userId, kind: 'lab_submit', amount: 10 } });
-      } catch {}
+      await recordXpEvent(ctx, { userId, kind: 'lab_submit', amount: 10 });
       return { id: created.id, status: SubmissionStatus.PENDING };
     }),
 });

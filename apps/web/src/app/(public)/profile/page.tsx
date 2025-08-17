@@ -14,6 +14,26 @@ export default async function ProfilePage() {
             Submissions: <span className="font-semibold">{data.submissions.passed + data.submissions.failed + data.submissions.pending}</span>
             {' '} (passed {data.submissions.passed}, failed {data.submissions.failed})
           </div>
+          {data.badges?.length ? (
+            <div className="mt-2">
+              <div className="font-semibold">Recent Badges</div>
+              <ul className="list-disc list-inside text-sm text-gray-700">
+                {data.badges.slice(0, 3).map((b: any) => (
+                  <li key={b.id}>{b.name}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {data.recentSubmissions?.length ? (
+            <div className="mt-2">
+              <div className="font-semibold">Recent Submissions</div>
+              <ul className="list-disc list-inside text-sm text-gray-700">
+                {data.recentSubmissions.map((s: any) => (
+                  <li key={String(s.id)}>{String(s.status)}{typeof s.score === 'number' ? ` (${s.score})` : ''}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
       </main>
     );
