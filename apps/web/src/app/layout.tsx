@@ -1,4 +1,5 @@
 import '../styles/globals.css';
+import React from 'react';
 import EnvBanner from './EnvBanner';
 import type { ReactNode } from 'react';
 import Link from 'next/link';

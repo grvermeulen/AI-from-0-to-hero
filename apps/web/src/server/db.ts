@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import pkg from '@prisma/client';
+const { PrismaClient } = pkg as unknown as { PrismaClient: typeof import('@prisma/client').PrismaClient };
 
 declare global {
   // eslint-disable-next-line no-var

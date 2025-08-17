@@ -2,7 +2,8 @@ import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, protectedProcedure, resolveDbUserIdFromSession } from '@/server/trpc';
 import { offlineMode } from '@/server/env';
-import { SubmissionStatus } from '@prisma/client';
+type SubmissionStatus = 'PENDING' | 'PASSED' | 'FAILED';
+const SubmissionStatus = { PASSED: 'PASSED' as SubmissionStatus, FAILED: 'FAILED' as SubmissionStatus };
 import { recordXpEvent } from '@/server/xp';
 
 export const quizRouter = createTRPCRouter({
