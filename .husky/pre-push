@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+# Husky v10 does not require sourcing husky.sh
+
+printf "[pre-push] Typechecking...\n"
+pnpm -r typecheck || exit 1
+
+printf "[pre-push] Running web tests (CI mode)...\n"
+pnpm --filter web test:ci || exit 1
+
+# Optional: enable to enforce linting before push
+# pnpm -r lint || exit 1

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '@/server/trpc';
+import { recordXpEvent } from '@/server/xp';
 
 export const lessonRouter = createTRPCRouter({
   get: publicProcedure
@@ -17,11 +18,7 @@ export const lessonRouter = createTRPCRouter({
     .input(z.object({ lessonId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session!.user!.id;
-      try {
-        await ctx.db.xPEvent.create({
-          data: { userId, kind: 'lesson_complete', amount: 10 },
-        });
-      } catch {}
+      await recordXpEvent(ctx, { userId, kind: 'lesson_complete', amount: 10 });
       return { ok: true } as const;
     }),
 });

@@ -75,9 +75,23 @@ Setup (if using CLI or API from local scripts):
 Note: Some MCP integrations are used by the AI agent; for manual equivalents use the Railway Dashboard or CLI.
 
 ### Testing and Quality
-- Unit tests: `pnpm --filter web test:ci` (Vitest)
+- Unit tests: `pnpm --filter web test:ci` (Vitest, coverage enabled)
 - Type check: `pnpm -r typecheck`
 - Build: `pnpm -r build` (Next.js)
+
+### Coverage
+- Local: `pnpm --filter web test --run --coverage` writes `apps/web/coverage/lcov.info`
+- CI: uploads coverage to Codecov; set `CODECOV_TOKEN` repo secret or install the Codecov app
+
+### Local CI Guard (Husky)
+- We use Husky Git hooks to prevent pushing code that will fail CI.
+- Pre-push hook (stored at `.husky/pre-push`) runs:
+  - `pnpm -r typecheck`
+  - `pnpm --filter web test:ci`
+- If either command fails, the push is blocked. Fix locally and retry.
+- Bypass (emergencies only): `GIT_SKIP_HOOKS=1 git push`
+- You can also run these checks manually before pushing:
+  - `pnpm -r typecheck && pnpm --filter web test:ci`
 
 ### CI/CD
 - GitHub Actions workflow lives under `.github/workflows/` (if present); CI runs typecheck/tests and builds

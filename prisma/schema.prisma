@@ -126,6 +126,8 @@ model Submission {
   feedback  String?
   createdAt DateTime          @default(now())
   aiEvaluation AIEvaluation?
+
+  @@index([userId, createdAt])
 }
 
 model Badge {
@@ -154,6 +156,8 @@ model XPEvent {
   amount    Int
   meta      Json?
   createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
 }
 
 model AIPromptTemplate {

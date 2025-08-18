@@ -1,5 +1,8 @@
 AI‑First QA Training Platform — Build Progress
 
+![CI](https://github.com/grvermeulen/AI-from-0-to-hero/actions/workflows/ci.yml/badge.svg)
+[![codecov](https://codecov.io/gh/grvermeulen/AI-from-0-to-hero/branch/main/graph/badge.svg?token=CODECOV_TOKEN_PLACEHOLDER)](https://codecov.io/gh/grvermeulen/AI-from-0-to-hero)
+
 
 - [x] 1. Scaffold Next.js 14 + Tailwind + ESLint (monorepo via pnpm workspaces)
 - [x] 2. Add tRPC + Zod baseline (HTTP adapter route, sample router)
@@ -7,7 +10,7 @@ AI‑First QA Training Platform — Build Progress
 - [x] 4. Add Prisma models + migrations; seed minimal tracks/modules
 - [x] 5. Wire public/authed/admin tRPC routers
 - [x] 6. Build Home, Catalog, Lesson, Lab Runner, Quiz, Profile screens
-- [ ] 7. Add XP engine + badges + leaderboards
+- [x] 7. Add XP engine + badges + leaderboards
 - [ ] 8. Integrate AI prompt widgets; ReadyAPI → Playwright template
 - [ ] 9. Testing: unit/integration/e2e; Axe + Lighthouse
 - [ ] 10. Observability: pino logs; healthcheck; Sentry (optional)
@@ -449,6 +452,11 @@ export const authOptions = {
 * **Error tracking** (Sentry optional), with DSN env.
 * **Health check** route `/api/health` (DB + queue if added).
 * **Prisma migrate deploy** at startup; idempotent seed.
+
+### Coverage Reporting
+- Test coverage is generated in `apps/web/coverage/lcov.info` via Vitest.
+- CI uploads coverage to Codecov using `codecov/codecov-action@v4`.
+- Repository secret required: `CODECOV_TOKEN` (or install the Codecov app for tokenless uploads).
 
 ---
 

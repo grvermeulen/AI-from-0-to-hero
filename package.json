@@ -30,7 +30,8 @@
     "db:docker:start": "bash scripts/db.sh docker-start",
     "db:docker:stop": "bash scripts/db.sh docker-stop",
     "db:push": "npx prisma db push",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
@@ -38,10 +39,12 @@
     "tsx": "^4.16.2",
     "@playwright/test": "^1.46.0",
     "@modelcontextprotocol/sdk": "^1.2.0",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "husky": "^9.1.7"
   },
   "dependencies": {
     "@prisma/client": "6.13.0",
-    "bcryptjs": "^2.4.3"
+    "bcryptjs": "^2.4.3",
+    "pino": "^9.3.2"
   }
 }

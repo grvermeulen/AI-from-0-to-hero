@@ -15,7 +15,7 @@ export default async function LeaderboardPage() {
         <section>
           <h2 className="text-lg font-semibold">Weekly</h2>
           <ol className="mt-2 divide-y rounded border">
-            {weekly.map((it) => (
+            {weekly.map((it: { userId: string; rank: number; label: string; xp: number }) => (
               <li key={it.userId} className="flex items-center justify-between p-3">
                 <div className="flex items-center gap-3">
                   <div className="w-6 text-right tabular-nums">{it.rank}.</div>
@@ -30,7 +30,7 @@ export default async function LeaderboardPage() {
         <section>
           <h2 className="text-lg font-semibold">All‑time</h2>
           <ol className="mt-2 divide-y rounded border">
-            {allTime.map((it) => (
+            {allTime.map((it: { userId: string; rank: number; label: string; xp: number }) => (
               <li key={it.userId} className="flex items-center justify-between p-3">
                 <div className="flex items-center gap-3">
                   <div className="w-6 text-right tabular-nums">{it.rank}.</div>

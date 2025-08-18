@@ -18,13 +18,14 @@ export default async function QuizPage({ params, searchParams }: Params & Search
       if (key.startsWith('q_')) answers[key.slice(2)] = String(value);
     }
     const c = await getServerTrpcCaller();
+    let res;
     try {
-      const res = await c.quiz.submit({ quizId: id, answers });
-      const q = new URLSearchParams({ score: String(res.score ?? ''), passed: res.status === 'PASSED' ? '1' : '0' });
-      redirect(`/quiz/${id}?${q.toString()}`);
-    } catch (e) {
+      res = await c.quiz.submit({ quizId: id, answers });
+    } catch {
       redirect(`/quiz/${id}?error=1`);
     }
+    const q = new URLSearchParams({ score: String(res!.score ?? ''), passed: res!.status === 'PASSED' ? '1' : '0' });
+    redirect(`/quiz/${id}?${q.toString()}`);
   }
 
   try {

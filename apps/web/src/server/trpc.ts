@@ -3,6 +3,8 @@ import { offlineMode, dbConfigured } from './env';
 import superjson from 'superjson';
 import type { Session } from 'next-auth';
 import { db as prisma } from './db';
+import { ZodError } from 'zod';
+import { getCurrentSession } from './session';
 
 export type TRPCContext = {
   session: Session | null;
@@ -11,20 +13,28 @@ export type TRPCContext = {
 
 export async function createTRPCContext(): Promise<TRPCContext> {
   let session: TRPCContext['session'] = null;
-  try {
-    // Dynamically import auth to avoid hard dependency when not configured yet
-    const mod = await import('./auth');
-    if (typeof mod.getSession === 'function') {
-      session = await mod.getSession();
-    }
-  } catch {
-    // leave session as null
-  }
+  session = await getCurrentSession();
   return { session, db: prisma };
 }
 
 const t = initTRPC.context<TRPCContext>().create({
   transformer: superjson,
+  errorFormatter({ shape, error }) {
+    let appCode: string | undefined;
+    // Map Zod input errors on fields named "answers" to INVALID_ANSWER for quiz.submit
+    if (error.code === 'BAD_REQUEST' && error.cause instanceof ZodError) {
+      const z = error.cause as ZodError;
+      const touchesAnswers = z.issues?.some((iss) => (iss.path?.[0] as string | undefined) === 'answers');
+      if (touchesAnswers) appCode = 'INVALID_ANSWER';
+    }
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        appCode,
+      },
+    };
+  },
 });
 
 export const createTRPCRouter = t.router;

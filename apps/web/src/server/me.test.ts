@@ -10,6 +10,7 @@ vi.mock('./db', () => {
         count: vi.fn(async ({ where }: any) => {
           return where.status === 'PASSED' ? 3 : where.status === 'FAILED' ? 1 : 2;
         }),
+        findMany: vi.fn(async () => [{ id: 's1', status: 'PASSED', score: 100, createdAt: new Date() }]),
       },
     },
   };

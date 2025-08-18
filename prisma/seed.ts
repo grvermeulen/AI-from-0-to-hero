@@ -159,6 +159,23 @@ async function main() {
       role: Role.LEARNER,
     },
   });
+
+  // Seed initial badges
+  await db.badge.upsert({
+    where: { slug: 'first-lesson' },
+    create: { slug: 'first-lesson', name: 'First Lesson', criteria: 'Complete your first lesson', icon: '🎓' },
+    update: {},
+  });
+  await db.badge.upsert({
+    where: { slug: 'first-quiz-pass' },
+    create: { slug: 'first-quiz-pass', name: 'First Quiz Pass', criteria: 'Pass any quiz with >=80%', icon: '🏅' },
+    update: {},
+  });
+  await db.badge.upsert({
+    where: { slug: 'first-lab-submit' },
+    create: { slug: 'first-lab-submit', name: 'First Lab Submit', criteria: 'Submit your first lab', icon: '🧪' },
+    update: {},
+  });
 }
 
 main()

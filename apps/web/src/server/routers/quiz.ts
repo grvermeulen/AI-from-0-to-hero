@@ -2,7 +2,9 @@ import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, protectedProcedure, resolveDbUserIdFromSession } from '@/server/trpc';
 import { offlineMode } from '@/server/env';
-import { SubmissionStatus } from '@prisma/client';
+type SubmissionStatus = 'PENDING' | 'PASSED' | 'FAILED';
+const SubmissionStatus = { PASSED: 'PASSED' as SubmissionStatus, FAILED: 'FAILED' as SubmissionStatus };
+import { recordXpEvent } from '@/server/xp';
 
 export const quizRouter = createTRPCRouter({
   start: protectedProcedure
@@ -26,7 +28,7 @@ export const quizRouter = createTRPCRouter({
       });
       if (!quiz) throw new TRPCError({ code: 'NOT_FOUND', message: 'Quiz not found' });
       // Hide answers when starting quiz
-      const questions = quiz.questions.map((q) => ({ id: q.id, kind: q.kind, prompt: q.prompt, options: q.options }));
+      const questions = quiz.questions.map((q: any) => ({ id: q.id, kind: q.kind, prompt: q.prompt, options: q.options }));
       return { id: quiz.id, title: quiz.title, questions };
     }),
 
@@ -76,12 +78,10 @@ export const quizRouter = createTRPCRouter({
           score,
         },
       });
-      try {
-        await ctx.db.xPEvent.create({ data: { userId, kind: 'quiz_submit', amount: 10 } });
-        if (status === SubmissionStatus.PASSED) {
-          await ctx.db.xPEvent.create({ data: { userId, kind: 'quiz_pass', amount: 25 } });
-        }
-      } catch {}
+      await recordXpEvent(ctx, { userId, kind: 'quiz_submit', amount: 10 });
+      if (status === SubmissionStatus.PASSED) {
+        await recordXpEvent(ctx, { userId, kind: 'quiz_pass', amount: 25 });
+      }
       return { id: submission.id, status, score };
     }),
 });
