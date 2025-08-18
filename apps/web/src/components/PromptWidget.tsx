@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 
-export default function PromptWidget() {
-  const [input, setInput] = useState("");
+export default function PromptWidget({ initialPrompt }: { initialPrompt?: string }) {
+  const [input, setInput] = useState(initialPrompt ?? "");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [streaming, setStreaming] = useState(false);
@@ -52,6 +52,21 @@ export default function PromptWidget() {
           {loading ? "Generating…" : "Generate"}
         </button>
       </form>
+      <div className="mt-2">
+        <button
+          type="button"
+          className="text-xs underline text-gray-600"
+          onClick={async () => {
+            try {
+              const res = await fetch('/api/ai/templates/readyapi-to-playwright');
+              const json = await res.json();
+              if (json?.template) setInput(json.template);
+            } catch {}
+          }}
+        >
+          Load ReadyAPI → Playwright template
+        </button>
+      </div>
       {result !== null && (
         <div className="mt-3 rounded border bg-gray-50 p-3 text-sm whitespace-pre-wrap">
           {result}
