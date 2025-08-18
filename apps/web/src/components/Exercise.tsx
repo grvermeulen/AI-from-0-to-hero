@@ -4,7 +4,7 @@ import { useState } from 'react';
 export function CommandExercise({ lessonSlug }: { lessonSlug: string }) {
   const [input, setInput] = useState('git init\ngit add .\ngit commit -m "Initial"');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ score: number; pass: boolean; feedback: string } | null>(null);
+  const [result, setResult] = useState<{ score: number; pass: boolean; feedback: string; info?: string } | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -17,8 +17,9 @@ export function CommandExercise({ lessonSlug }: { lessonSlug: string }) {
         body: JSON.stringify({ lessonSlug, input }),
       });
       const json = await res.json();
-      if (res.ok) setResult({ score: json.score, pass: !!json.pass, feedback: String(json.feedback || '') });
-      else setResult({ score: 0, pass: false, feedback: 'Submission failed. Please try again.' });
+      if (res.ok) setResult({ score: json.score ?? 0, pass: !!json.pass, feedback: String(json.feedback || ''), info: json.offline ? 'Offline mode: not persisted.' : (json.persisted === false ? 'Not persisted.' : undefined) });
+      else if (res.status === 401) setResult({ score: 0, pass: false, feedback: 'Please login to submit exercises.', info: 'Unauthorized' });
+      else setResult({ score: 0, pass: false, feedback: json?.message || 'Submission failed. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -35,6 +36,7 @@ export function CommandExercise({ lessonSlug }: { lessonSlug: string }) {
         <div className={`mt-3 rounded border p-3 text-sm ${result.pass ? 'border-green-300 bg-green-50' : 'border-yellow-300 bg-yellow-50'}`}>
           <div><span className="font-semibold">Score:</span> {result.score}/100</div>
           <div className="mt-1 whitespace-pre-wrap">{result.feedback}</div>
+          {result.info ? <div className="mt-1 text-xs text-gray-600">{result.info}</div> : null}
         </div>
       )}
     </section>
@@ -44,7 +46,7 @@ export function CommandExercise({ lessonSlug }: { lessonSlug: string }) {
 export function CodeExercise({ lessonSlug }: { lessonSlug: string }) {
   const [code, setCode] = useState('import { test, expect } from "@playwright/test";\n\ntest("example", async ({ request }) => {\n  const res = await request.get("/api/health");\n  expect(res.status()).toBe(200);\n});');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ score: number; pass: boolean; feedback: string } | null>(null);
+  const [result, setResult] = useState<{ score: number; pass: boolean; feedback: string; info?: string } | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -57,8 +59,9 @@ export function CodeExercise({ lessonSlug }: { lessonSlug: string }) {
         body: JSON.stringify({ lessonSlug, code }),
       });
       const json = await res.json();
-      if (res.ok) setResult({ score: json.score, pass: !!json.pass, feedback: String(json.feedback || '') });
-      else setResult({ score: 0, pass: false, feedback: 'Submission failed. Please try again.' });
+      if (res.ok) setResult({ score: json.score ?? 0, pass: !!json.pass, feedback: String(json.feedback || ''), info: json.offline ? 'Offline mode: not persisted.' : (json.persisted === false ? 'Not persisted.' : undefined) });
+      else if (res.status === 401) setResult({ score: 0, pass: false, feedback: 'Please login to submit exercises.', info: 'Unauthorized' });
+      else setResult({ score: 0, pass: false, feedback: json?.message || 'Submission failed. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -75,6 +78,7 @@ export function CodeExercise({ lessonSlug }: { lessonSlug: string }) {
         <div className={`mt-3 rounded border p-3 text-sm ${result.pass ? 'border-green-300 bg-green-50' : 'border-yellow-300 bg-yellow-50'}`}>
           <div><span className="font-semibold">Score:</span> {result.score}/100</div>
           <div className="mt-1 whitespace-pre-wrap">{result.feedback}</div>
+          {result.info ? <div className="mt-1 text-xs text-gray-600">{result.info}</div> : null}
         </div>
       )}
     </section>

@@ -35,7 +35,7 @@ function basicCodeHeuristics(code: string) {
 
 export async function POST(req: Request) {
   const session = await getCurrentSession();
-  if (!session?.user?.id) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  if (!session?.user?.id) return NextResponse.json({ error: 'UNAUTHORIZED', message: 'Please login to submit exercises.' }, { status: 401 });
   let body: z.infer<typeof BodySchema>;
   try {
     body = BodySchema.parse(await req.json());
@@ -47,31 +47,39 @@ export async function POST(req: Request) {
   const { score, feedback } = basicCodeHeuristics(code);
   const passed = score >= 80;
 
-  const submission = await db.submission.create({
-    data: {
-      userId: session.user.id,
-      code,
-      status: passed ? 'PASSED' : 'FAILED',
-      score,
-      feedback,
-    },
-  });
-
-  await db.aIEvaluation.create({
-    data: {
-      submissionId: submission.id,
-      rubric: lessonSlug ? `code-${lessonSlug}` : 'code-generic',
-      model: process.env.OPENAI_API_KEY ? (process.env.OPENAI_MODEL || 'gpt-4o-mini') : 'offline',
-      feedback,
-      score,
-    },
-  });
-
-  if (passed) {
-    await recordXpEvent({ db, session } as any, { userId: session.user.id, kind: 'exercise_pass', amount: 10 });
+  if (!process.env.DATABASE_URL) {
+    return NextResponse.json({ score, pass: passed, feedback, persisted: false, offline: true });
   }
 
-  return NextResponse.json({ score, pass: passed, feedback, submissionId: submission.id });
+  try {
+    const submission = await db.submission.create({
+      data: {
+        userId: session.user.id,
+        code,
+        status: passed ? 'PASSED' : 'FAILED',
+        score,
+        feedback,
+      },
+    });
+
+    await db.aIEvaluation.create({
+      data: {
+        submissionId: submission.id,
+        rubric: lessonSlug ? `code-${lessonSlug}` : 'code-generic',
+        model: process.env.OPENAI_API_KEY ? (process.env.OPENAI_MODEL || 'gpt-4o-mini') : 'offline',
+        feedback,
+        score,
+      },
+    });
+
+    if (passed) {
+      await recordXpEvent({ db, session } as any, { userId: session.user.id, kind: 'exercise_pass', amount: 10 });
+    }
+
+    return NextResponse.json({ score, pass: passed, feedback, submissionId: submission.id, persisted: true });
+  } catch (e) {
+    return NextResponse.json({ error: 'PERSIST_FAILED', message: 'Saved result could not be persisted. Please retry later.', score, pass: passed, feedback, persisted: false }, { status: 200 });
+  }
 }
 
 
