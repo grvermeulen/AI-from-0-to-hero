@@ -2,6 +2,7 @@ import { getServerTrpcCaller } from '@/server/trpcClient';
 import { remark } from 'remark';
 import html from 'remark-html';
 import PromptWidget from '@/components/PromptWidget';
+import { CommandExercise, CodeExercise } from '@/components/Exercise';
 
 type Params = { params: { slug: string } };
 
@@ -25,6 +26,8 @@ export default async function LessonPage({ params }: Params) {
       <h1 className="text-2xl font-bold">{data.title}</h1>
       <article className="prose mt-4" dangerouslySetInnerHTML={{ __html: contentHtml }} />
       <PromptWidget initialPrompt={`Generate 3 Playwright API test ideas for the lesson: ${data.title}. Include one negative case.`} />
+      <CommandExercise lessonSlug={slug} />
+      <CodeExercise lessonSlug={slug} />
     </main>
   );
 }
