@@ -49,17 +49,11 @@ These are persistent preferences/agreements we keep in memory and follow across 
   - After opening a PR, continuously monitor status: if checks fail, fix and update; poll roughly every 30 seconds for reviews/updates until done
   - Always process open PRs before starting new tasks
   - For AI-from-0-to-hero tasks, create issues using the “Agent Task” template with labels: `agent:assistant`, `status:ready`, and a priority label (`P1/P2/P3`). Maintain lifecycle labels (`ready`, `in-progress`, `blocked`, `done`) and deliver each task as a PR with evidence (tests/screenshots/steps). Keep tasks small and atomic
+  - Use `GITHUB_TOKEN` from the environment for GitHub CLI/automation; ensure scopes include `repo` and `admin:repo_hook` when needed
 
 - Testing/quality
   - Run tests automatically without asking when changes are made
   - Avoid using deprecated APIs or suppressing deprecation warnings; prefer proper, forward-looking fixes
-
-- Coverage analysis (on request)
-  - Only consider the tests listed in `enabled_tests.txt`
-  - Determine coverage using the OpenAPI spec (ask for it if missing)
-  - Use the provided tests to report coverage per categories as in `coverage_report.md`
-  - Generate the coverage report as a `.md` file alongside the tests (or in the first tests folder if multiple)
-  - Keep the report format exactly the same; only the results/content change
 
 - Local workflow gates
   - Use a Husky pre-push hook to run typecheck and CI-mode unit tests (`pnpm -r typecheck` and `pnpm --filter web test:ci`) before pushing, to reduce CI failures
