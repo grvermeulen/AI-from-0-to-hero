@@ -8,6 +8,7 @@ export const runtime = 'nodejs';
 
 const BodySchema = z.object({
   lessonSlug: z.string().min(1).max(100).optional(),
+  exerciseTitle: z.string().min(1).max(200).optional(),
   code: z.string().min(1).max(20000),
 });
 
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'bad_request' }, { status: 400 });
   }
 
-  const { lessonSlug, code } = body;
+  const { lessonSlug, exerciseTitle, code } = body;
   const { score, feedback } = basicCodeHeuristics(code);
   const passed = score >= 80;
 
@@ -65,7 +66,7 @@ export async function POST(req: Request) {
     await db.aIEvaluation.create({
       data: {
         submissionId: submission.id,
-        rubric: lessonSlug ? `code-${lessonSlug}` : 'code-generic',
+        rubric: `${lessonSlug ? `code-${lessonSlug}` : 'code-generic'}${exerciseTitle ? `:${exerciseTitle}` : ''}`,
         model: process.env.OPENAI_API_KEY ? (process.env.OPENAI_MODEL || 'gpt-4o-mini') : 'offline',
         feedback,
         score,

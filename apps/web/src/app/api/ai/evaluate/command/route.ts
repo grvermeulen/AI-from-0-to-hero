@@ -8,6 +8,7 @@ export const runtime = 'nodejs';
 
 const BodySchema = z.object({
   lessonSlug: z.string().min(1).max(100).optional(),
+  exerciseTitle: z.string().min(1).max(200).optional(),
   input: z.string().min(1).max(5000),
 });
 
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'bad_request' }, { status: 400 });
   }
 
-  const { lessonSlug, input } = body;
+  const { lessonSlug, exerciseTitle, input } = body;
 
   // Deterministic scoring first (offline-friendly)
   let score = 0;
@@ -62,7 +63,7 @@ export async function POST(req: Request) {
     const submission = await db.submission.create({
       data: {
         userId: session.user.id,
-        answers: JSON.stringify({ kind: 'command', lessonSlug: lessonSlug ?? null, input }),
+        answers: JSON.stringify({ kind: 'command', lessonSlug: lessonSlug ?? null, exerciseTitle: exerciseTitle ?? null, input }),
         status: passed ? 'PASSED' : 'FAILED',
         score,
         feedback,
@@ -72,7 +73,7 @@ export async function POST(req: Request) {
     await db.aIEvaluation.create({
       data: {
         submissionId: submission.id,
-        rubric: lessonSlug ? `command-${lessonSlug}` : 'command-generic',
+        rubric: `${lessonSlug ? `command-${lessonSlug}` : 'command-generic'}${exerciseTitle ? `:${exerciseTitle}` : ''}`,
         model: process.env.OPENAI_API_KEY ? (process.env.OPENAI_MODEL || 'gpt-4o-mini') : 'offline',
         feedback,
         score,

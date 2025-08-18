@@ -31,8 +31,8 @@ export default async function LessonPage({ params }: Params) {
       <h1 className="text-2xl font-bold">{data.title}</h1>
       <article className="prose mt-4" dangerouslySetInnerHTML={{ __html: contentHtml }} />
       <PromptWidget initialPrompt={`Generate 3 Playwright API test ideas for the lesson: ${data.title}. Include one negative case.`} />
-      <CommandExercise lessonSlug={slug} />
-      <CodeExercise lessonSlug={slug} />
+      <CommandExercise lessonSlug={slug} title={`Commands: init → add → commit`} />
+      <CodeExercise lessonSlug={slug} title={`Code: Write a basic Playwright API test`} />
       <section className="mt-6 rounded border p-4">
         <h3 className="text-base font-semibold">Recent Attempts</h3>
         {attempts.length ? (
