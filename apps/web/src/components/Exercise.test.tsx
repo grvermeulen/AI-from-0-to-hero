@@ -8,10 +8,8 @@ import { CommandExercise, CodeExercise } from './Exercise';
 beforeEach(() => {
   vi.restoreAllMocks();
   // Ensure React is available globally for classic JSX transform in tests
-  // @ts-expect-error attach for test env
-  globalThis.React = React;
-  // @ts-expect-error override global
-  global.fetch = vi.fn(async (url: string, init?: any) => {
+  (globalThis as any).React = React;
+  (global as any).fetch = vi.fn(async (url: string, init?: any) => {
     if (String(url).includes('/api/ai/evaluate/command')) {
       return new Response(JSON.stringify({ score: 100, pass: true, feedback: 'ok', offline: true, persisted: false }), { status: 200, headers: { 'content-type': 'application/json' } });
     }
