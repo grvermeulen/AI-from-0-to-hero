@@ -2,6 +2,7 @@ import { remark } from 'remark';
 import html from 'remark-html';
 import PromptWidget from '@/components/PromptWidget';
 import { CommandExercise, CodeExercise } from '@/components/Exercise';
+import { getServerTrpcCaller } from '@/server/trpcClient';
 
 type Params = { params: { slug: string } };
 
