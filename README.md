@@ -10,7 +10,7 @@ AI‑First QA Training Platform — Build Progress
 - [x] 4. Add Prisma models + migrations; seed minimal tracks/modules
 - [x] 5. Wire public/authed/admin tRPC routers
 - [x] 6. Build Home, Catalog, Lesson, Lab Runner, Quiz, Profile screens
-- [ ] 7. Add XP engine + badges + leaderboards
+- [x] 7. Add XP engine + badges + leaderboards
 - [ ] 8. Integrate AI prompt widgets; ReadyAPI → Playwright template
 - [ ] 9. Testing: unit/integration/e2e; Axe + Lighthouse
 - [ ] 10. Observability: pino logs; healthcheck; Sentry (optional)
