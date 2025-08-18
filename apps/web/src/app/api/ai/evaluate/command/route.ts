@@ -75,8 +75,7 @@ export async function POST(req: Request) {
   });
 
   if (passed) {
-    // Award XP for successful exercise
-    await recordXpEvent({ db, session } as any, { userId: session.user.id, kind: 'lesson_complete', amount: 10 });
+    await recordXpEvent({ db, session } as any, { userId: session.user.id, kind: 'exercise_pass', amount: 10 });
   }
 
   return NextResponse.json({ score, pass: passed, feedback, submissionId: submission.id });

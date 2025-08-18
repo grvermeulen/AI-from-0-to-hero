@@ -21,5 +21,20 @@ export const lessonRouter = createTRPCRouter({
       await recordXpEvent(ctx, { userId, kind: 'lesson_complete', amount: 10 });
       return { ok: true } as const;
     }),
+
+  attempts: protectedProcedure
+    .input(z.object({ slug: z.string().min(1), take: z.number().min(1).max(50).optional() }))
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.session!.user!.id;
+      const lesson = await ctx.db.lesson.findUnique({ where: { slug: input.slug } });
+      if (!lesson) throw new TRPCError({ code: 'NOT_FOUND', message: 'Lesson not found' });
+      const attempts = await ctx.db.submission.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: input.take ?? 5,
+        select: { id: true, createdAt: true, status: true, score: true, feedback: true },
+      });
+      return attempts;
+    }),
 });
 

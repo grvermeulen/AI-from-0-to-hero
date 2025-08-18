@@ -200,6 +200,11 @@ async function main() {
     create: { slug: 'first-lab-submit', name: 'First Lab Submit', criteria: 'Submit your first lab', icon: '🧪' },
     update: {},
   });
+  await db.badge.upsert({
+    where: { slug: 'first-exercise-pass' },
+    create: { slug: 'first-exercise-pass', name: 'First Exercise Pass', criteria: 'Pass your first AI-reviewed exercise', icon: '✅' },
+    update: {},
+  });
 }
 
 main()
