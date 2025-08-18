@@ -31,10 +31,32 @@ export const meRouter = createTRPCRouter({
       if (xpDays.has(dayKey(d))) streakDays += 1;
       else break;
     }
+    // Compute badge popularity percentages and available (not yet earned) badges
+    let badgesEarned: Array<{ id: string; name: string; icon?: string | null; earnedAt: Date; percentUsers?: number }> = [];
+    let badgesAvailable: Array<{ id: string; name: string; icon?: string | null; percentUsers?: number }> = [];
+    try {
+      const totalUsers = await ctx.db.user.count();
+      const allBadges = await ctx.db.badge.findMany();
+      const grouped = await ctx.db.userBadge.groupBy({ by: ['badgeId'], _count: { badgeId: true } });
+      const countByBadgeId = new Map<string, number>(grouped.map((g: any) => [g.badgeId as string, g._count.badgeId as number]));
+      const percentFor = (badgeId: string) => (totalUsers > 0 ? Math.round(((countByBadgeId.get(badgeId) ?? 0) / totalUsers) * 100) : 0);
+      const earnedIds = new Set<string>(badges.map((b: any) => b.badge.id as string));
+      badgesEarned = badges.map((b: any) => ({ id: b.badge.id, name: b.badge.name, icon: b.badge.icon, earnedAt: b.earnedAt, percentUsers: percentFor(b.badge.id) }));
+      badgesAvailable = allBadges
+        .filter((b: any) => !earnedIds.has(b.id))
+        .map((b: any) => ({ id: b.id, name: b.name, icon: b.icon, percentUsers: percentFor(b.id) }));
+    } catch {
+      // In test or offline mode, gracefully degrade without percentages
+      badgesEarned = badges.map((b: any) => ({ id: b.badge.id, name: b.badge.name, icon: b.badge.icon, earnedAt: b.earnedAt }));
+      badgesAvailable = [];
+    }
+
     return {
       xpTotal,
       badgesCount,
-      badges: badges.map((b: any) => ({ id: b.badge.id, name: b.badge.name, icon: b.badge.icon, earnedAt: b.earnedAt })),
+      badges: badgesEarned, // keep legacy field for recent badges list
+      badgesEarned,
+      badgesAvailable,
       streakDays,
       submissions: { passed, failed, pending },
       recentSubmissions: recentSubs,
