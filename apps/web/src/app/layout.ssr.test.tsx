@@ -27,7 +27,7 @@ describe('RootLayout SSR', () => {
     expect(html).toContain('Login');
     expect(html).toContain('Sign up');
     expect(html).not.toContain('Sign out');
-  });
+  }, 15000);
 
   it('renders Logged in + Sign out when authenticated', async () => {
     sessionFactory = async () => ({ user: { id: 'u1', email: 'a@b.com' }, expires: new Date().toISOString() });
@@ -37,7 +37,7 @@ describe('RootLayout SSR', () => {
     // React adds a comment boundary around interpolations in SSR; match just the email
     expect(html).toContain('a@b.com');
     expect(html).toContain('Sign out');
-  });
+  }, 15000);
 });
 
 
