@@ -34,7 +34,13 @@ export const lessonRouter = createTRPCRouter({
         take: input.take ?? 5,
         select: { id: true, createdAt: true, status: true, score: true, feedback: true },
       });
-      return attempts;
+      return attempts.map((a) => ({
+        id: a.id,
+        createdAt: a.createdAt.toISOString(),
+        status: a.status,
+        score: a.score,
+        feedback: a.feedback,
+      }));
     }),
 });
 
