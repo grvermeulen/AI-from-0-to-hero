@@ -7,6 +7,9 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    environmentMatchGlobs: [
+      ['src/components/**/*.test.tsx', 'jsdom'],
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text-summary', 'lcov'],

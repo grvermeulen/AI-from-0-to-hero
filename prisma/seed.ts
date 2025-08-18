@@ -107,6 +107,30 @@ async function main() {
     update: {},
   });
 
+  // Seed AI prompt templates (rubrics/starting prompts)
+  await db.aIPromptTemplate.upsert({
+    where: { slug: 'git-intro-commands' },
+    create: {
+      slug: 'git-intro-commands',
+      title: 'Git Intro: command exercise rubric',
+      template:
+        'Evaluate learner command sequence for initializing a repo, staging changes, and committing. Reward correctness, order, and meaningful commit message. Provide constructive, friendly feedback. Output JSON: {"score":0..100,"tips":"..."}',
+      variables: [],
+    },
+    update: {},
+  });
+  await db.aIPromptTemplate.upsert({
+    where: { slug: 'ts-snippet-quality' },
+    create: {
+      slug: 'ts-snippet-quality',
+      title: 'TS snippet: quality rubric',
+      template:
+        'Assess a short TypeScript test snippet for structure (describe/it), assertions, and one negative path. Give concise suggestions. Output JSON: {"score":0..100,"tips":"..."}',
+      variables: [],
+    },
+    update: {},
+  });
+
   await db.lesson.upsert({
     where: { slug: 'readyapi-to-code' },
     create: {
@@ -174,6 +198,11 @@ async function main() {
   await db.badge.upsert({
     where: { slug: 'first-lab-submit' },
     create: { slug: 'first-lab-submit', name: 'First Lab Submit', criteria: 'Submit your first lab', icon: '🧪' },
+    update: {},
+  });
+  await db.badge.upsert({
+    where: { slug: 'first-exercise-pass' },
+    create: { slug: 'first-exercise-pass', name: 'First Exercise Pass', criteria: 'Pass your first AI-reviewed exercise', icon: '✅' },
     update: {},
   });
 }

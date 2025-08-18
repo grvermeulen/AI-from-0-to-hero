@@ -1,0 +1,88 @@
+"use client";
+import { useState } from 'react';
+
+export function CommandExercise({ lessonSlug, title }: { lessonSlug: string; title?: string }) {
+  const [input, setInput] = useState('git init\ngit add .\ngit commit -m "Initial"');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ score: number; pass: boolean; feedback: string; info?: string } | null>(null);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setResult(null);
+    try {
+      const res = await fetch('/api/ai/evaluate/command', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ lessonSlug, exerciseTitle: title, input }),
+      });
+      const json = await res.json();
+      if (res.ok) setResult({ score: json.score ?? 0, pass: !!json.pass, feedback: String(json.feedback || ''), info: json.offline ? 'Offline mode: not persisted.' : (json.persisted === false ? 'Not persisted.' : undefined) });
+      else if (res.status === 401) setResult({ score: 0, pass: false, feedback: 'Please login to submit exercises.', info: 'Unauthorized' });
+      else setResult({ score: 0, pass: false, feedback: json?.message || 'Submission failed. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <section className="mt-6 rounded border p-4">
+      <h3 className="text-base font-semibold">{title || 'Exercise: Commands'}</h3>
+      <form onSubmit={submit} className="mt-2 grid gap-2">
+        <textarea className="min-h-[80px] rounded border p-2" value={input} onChange={(e) => setInput(e.target.value)} />
+        <button disabled={loading} className="w-max rounded bg-blue-600 px-3 py-1 text-white disabled:opacity-60">{loading ? 'Submitting…' : 'Submit'}</button>
+      </form>
+      {result && (
+        <div className={`mt-3 rounded border p-3 text-sm ${result.pass ? 'border-green-300 bg-green-50' : 'border-yellow-300 bg-yellow-50'}`}>
+          <div><span className="font-semibold">Score:</span> {result.score}/100</div>
+          <div className="mt-1 whitespace-pre-wrap">{result.feedback}</div>
+          {result.info ? <div className="mt-1 text-xs text-gray-600">{result.info}</div> : null}
+        </div>
+      )}
+    </section>
+  );
+}
+
+export function CodeExercise({ lessonSlug, title }: { lessonSlug: string; title?: string }) {
+  const [code, setCode] = useState('import { test, expect } from "@playwright/test";\n\ntest("example", async ({ request }) => {\n  const res = await request.get("/api/health");\n  expect(res.status()).toBe(200);\n});');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ score: number; pass: boolean; feedback: string; info?: string } | null>(null);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setResult(null);
+    try {
+      const res = await fetch('/api/ai/evaluate/code', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ lessonSlug, exerciseTitle: title, code }),
+      });
+      const json = await res.json();
+      if (res.ok) setResult({ score: json.score ?? 0, pass: !!json.pass, feedback: String(json.feedback || ''), info: json.offline ? 'Offline mode: not persisted.' : (json.persisted === false ? 'Not persisted.' : undefined) });
+      else if (res.status === 401) setResult({ score: 0, pass: false, feedback: 'Please login to submit exercises.', info: 'Unauthorized' });
+      else setResult({ score: 0, pass: false, feedback: json?.message || 'Submission failed. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <section className="mt-6 rounded border p-4">
+      <h3 className="text-base font-semibold">{title || 'Exercise: Code snippet'}</h3>
+      <form onSubmit={submit} className="mt-2 grid gap-2">
+        <textarea className="min-h-[120px] rounded border p-2 font-mono" value={code} onChange={(e) => setCode(e.target.value)} />
+        <button disabled={loading} className="w-max rounded bg-blue-600 px-3 py-1 text-white disabled:opacity-60">{loading ? 'Submitting…' : 'Submit'}</button>
+      </form>
+      {result && (
+        <div className={`mt-3 rounded border p-3 text-sm ${result.pass ? 'border-green-300 bg-green-50' : 'border-yellow-300 bg-yellow-50'}`}>
+          <div><span className="font-semibold">Score:</span> {result.score}/100</div>
+          <div className="mt-1 whitespace-pre-wrap">{result.feedback}</div>
+          {result.info ? <div className="mt-1 text-xs text-gray-600">{result.info}</div> : null}
+        </div>
+      )}
+    </section>
+  );
+}
+
+

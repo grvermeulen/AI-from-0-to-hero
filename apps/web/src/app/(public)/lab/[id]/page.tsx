@@ -1,6 +1,7 @@
 import { getServerTrpcCaller } from '@/server/trpcClient';
 import { redirect } from 'next/navigation';
 import SubmitButton from '@/components/SubmitButton';
+import PromptWidget from '@/components/PromptWidget';
 
 type Params = { params: { id: string } };
 
@@ -56,6 +57,7 @@ export default async function LabPage({ params, searchParams }: Params & SearchP
           </label>
           <SubmitButton>Submit</SubmitButton>
         </form>
+        <PromptWidget initialPrompt={`Suggest test assertions for lab: ${lab.title}. Include status, schema, and negative paths.`} />
       </main>
     );
   } catch {

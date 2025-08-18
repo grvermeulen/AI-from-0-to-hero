@@ -3,7 +3,7 @@ set -euo pipefail
 
 OWNER="grvermeulen"
 REPO="AI-from-0-to-hero"
-PR_NUMBER="1"
+PR_NUMBER="${PR_NUMBER:-1}"
 LOG_FILE="scripts/pr_poll.log"
 
 MAX_CYCLES="${1:-}" # optional: number of cycles, default infinite
