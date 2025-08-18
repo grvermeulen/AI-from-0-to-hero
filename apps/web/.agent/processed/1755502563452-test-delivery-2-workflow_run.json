@@ -1,0 +1,7 @@
+{
+  "event": "workflow_run",
+  "delivery": "test-delivery-2",
+  "payload": {
+    "action": "completed"
+  }
+}

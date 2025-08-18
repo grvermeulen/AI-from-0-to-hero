@@ -1,11 +1,15 @@
 import { describe, it, expect, vi } from 'vitest';
-import { POST } from './route';
 
 vi.mock('@/server/rateLimit', async () => {
   return {
     checkRateLimit: vi.fn(() => ({ allowed: false, retryAfter: 60 })),
   };
 });
+
+// Avoid Prisma load through NextAuth internals
+vi.mock('@/server/db', () => ({ db: {} }));
+
+const { POST } = await import('./route');
 
 describe('POST /api/auth/[...nextauth] (rate limit)', () => {
   it('returns 429 when login is rate limited', async () => {
