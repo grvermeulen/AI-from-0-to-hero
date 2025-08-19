@@ -37,6 +37,7 @@ model User {
   submissions   Submission[]
   xpEvents      XPEvent[]
   badges        UserBadge[]
+  progress      LessonProgress[]
 }
 
 model Profile {
@@ -78,6 +79,7 @@ model Lesson {
   title     String
   contentMd String
   order     Int     @default(0)
+  progress  LessonProgress[]
 }
 
 model Lab {
@@ -176,5 +178,19 @@ model AIEvaluation {
   model        String
   feedback     String
   score        Int
+}
+
+model LessonProgress {
+  id         String   @id @default(cuid())
+  userId     String
+  lessonId   String
+  completedAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  lesson Lesson @relation(fields: [lessonId], references: [id])
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([lessonId])
 }
 

@@ -18,6 +18,13 @@ export const lessonRouter = createTRPCRouter({
     .input(z.object({ lessonId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session!.user!.id;
+      try {
+        await ctx.db.lessonProgress.upsert({
+          where: { userId_lessonId: { userId, lessonId: input.lessonId } },
+          create: { userId, lessonId: input.lessonId },
+          update: {},
+        });
+      } catch {}
       await recordXpEvent(ctx, { userId, kind: 'lesson_complete', amount: 10 });
       return { ok: true } as const;
     }),
