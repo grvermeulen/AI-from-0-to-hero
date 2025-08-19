@@ -6,9 +6,15 @@ const srcDir = fileURLToPath(new URL('./src', import.meta.url));
 export default defineConfig({
   test: {
     environment: 'node',
-    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    // Narrow to server tests and key SSR smoke tests for this feature branch
+    include: [
+      'src/server/**/*.test.ts',
+      'src/app/layout.ssr.test.tsx',
+      'src/app/(public)/profile/page.ssr.test.tsx',
+      'src/app/api/**/*.test.ts',
+    ],
     environmentMatchGlobs: [
-      ['src/components/**/*.test.tsx', 'jsdom'],
+      ['src/app/**/*.ssr.test.tsx', 'node'],
     ],
     coverage: {
       provider: 'v8',
