@@ -206,27 +206,7 @@ async function main() {
     },
   });
 
-  // Seed initial badges
-  await db.badge.upsert({
-    where: { slug: 'first-lesson' },
-    create: { slug: 'first-lesson', name: 'First Lesson', criteria: 'Complete your first lesson', icon: '🎓' },
-    update: {},
-  });
-  await db.badge.upsert({
-    where: { slug: 'first-quiz-pass' },
-    create: { slug: 'first-quiz-pass', name: 'First Quiz Pass', criteria: 'Pass any quiz with >=80%', icon: '🏅' },
-    update: {},
-  });
-  await db.badge.upsert({
-    where: { slug: 'first-lab-submit' },
-    create: { slug: 'first-lab-submit', name: 'First Lab Submit', criteria: 'Submit your first lab', icon: '🧪' },
-    update: {},
-  });
-  await db.badge.upsert({
-    where: { slug: 'first-exercise-pass' },
-    create: { slug: 'first-exercise-pass', name: 'First Exercise Pass', criteria: 'Pass your first AI-reviewed exercise', icon: '✅' },
-    update: {},
-  });
+  // (removed duplicate badge seeding; initial set is defined above)
 }
 
 main()
