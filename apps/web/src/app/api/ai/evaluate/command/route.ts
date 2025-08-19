@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { getCurrentSession } from '@/server/session';
 import { db } from '@/server/db';
 import { recordXpEvent } from '@/server/xp';
+import { checkRateLimit, getClientIp } from '@/server/rateLimit';
+import { isCsrfSafe } from '@/server/csrf';
 
 export const runtime = 'nodejs';
 
@@ -25,6 +27,10 @@ function scoreGitIntro(input: string) {
 }
 
 export async function POST(req: Request) {
+  if (!isCsrfSafe(req)) return NextResponse.json({ error: 'CSRF' }, { status: 403 });
+  const ip = getClientIp(req);
+  const rl = checkRateLimit({ key: `ai:evaluate:command:${ip}`, limit: 30, windowMs: 60 * 1000 });
+  if (!rl.allowed) return NextResponse.json({ error: 'RATE_LIMITED', retryAfter: rl.retryAfter }, { status: 429 });
   const session = await getCurrentSession();
   if (!session?.user?.id) return NextResponse.json({ error: 'UNAUTHORIZED', message: 'Please login to submit exercises.' }, { status: 401 });
   let body: z.infer<typeof BodySchema>;

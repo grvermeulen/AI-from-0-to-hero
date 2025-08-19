@@ -5,6 +5,7 @@ import { hash } from 'bcryptjs';
 import { z } from 'zod';
 import { checkRateLimit, getClientIp } from '@/server/rateLimit';
 import { createLogger, getRequestId } from '@/server/logger';
+import { isCsrfSafe } from '@/server/csrf';
 
 function wantsJson(req: Request): boolean {
   const accept = req.headers.get('accept') || '';
@@ -21,6 +22,9 @@ export async function POST(req: Request) {
   try {
     const requestId = getRequestId(req);
     const log = createLogger({ requestId });
+    if (!isCsrfSafe(req)) {
+      return NextResponse.json({ code: 'CSRF', message: 'Cross-site request blocked', requestId }, { status: 403 });
+    }
     // Rate limit by client IP for signup
     const ip = getClientIp(req);
     const rl = checkRateLimit({ key: `signup:${ip}`, limit: 10, windowMs: 5 * 60 * 1000 }) as { allowed: boolean; retryAfter?: number } | undefined;
