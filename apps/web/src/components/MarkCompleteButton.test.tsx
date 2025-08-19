@@ -10,7 +10,6 @@ describe('MarkCompleteButton', () => {
     const btn = screen.getByRole('button', { name: /mark complete/i });
     fireEvent.click(btn);
     expect(action).toHaveBeenCalled();
-    // allow transition callback to run
     await Promise.resolve();
     expect(window.localStorage.getItem('completed_lessons')).toContain('intro-to-git');
     expect(btn).toBeDisabled();

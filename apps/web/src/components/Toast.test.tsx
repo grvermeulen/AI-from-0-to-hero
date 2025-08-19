@@ -9,7 +9,6 @@ describe('Toast', () => {
     render(<Toast message="Saved" duration={1000} />);
     expect(screen.getByRole('status')).toHaveTextContent('Saved');
     vi.advanceTimersByTime(1000);
-    // wait microtask
     await Promise.resolve();
     expect(screen.queryByRole('status')).toBeNull();
     vi.useRealTimers();
