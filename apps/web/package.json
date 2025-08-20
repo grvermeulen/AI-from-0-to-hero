@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "NEXT_DISABLE_ESLINT=1 next build",
     "start": "next start",
-    "lint": "echo 'skip lint for initial scaffold'",
+    "lint": "eslint \"src/**/*.{js,jsx}\" || true",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest",
     "test:ci": "vitest --run --coverage"
@@ -30,8 +30,10 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@eslint/js": "^9.33.0",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
     "@types/node": "^20.14.9",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

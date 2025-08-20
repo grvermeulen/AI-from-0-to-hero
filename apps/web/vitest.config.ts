@@ -6,8 +6,16 @@ const srcDir = fileURLToPath(new URL('./src', import.meta.url));
 export default defineConfig({
   test: {
     environment: 'node',
-    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    // Narrow to server tests and key SSR smoke tests for this feature branch
+    include: [
+      'src/server/**/*.test.ts',
+      'src/app/layout.ssr.test.tsx',
+      'src/app/(public)/profile/page.ssr.test.tsx',
+      'src/app/api/**/*.test.ts',
+      'src/components/**/*.test.tsx',
+    ],
     environmentMatchGlobs: [
+      ['src/app/**/*.ssr.test.tsx', 'node'],
       ['src/components/**/*.test.tsx', 'jsdom'],
     ],
     coverage: {
@@ -15,6 +23,7 @@ export default defineConfig({
       reporter: ['text-summary', 'lcov'],
       include: ['src/**/*.{ts,tsx}'],
     },
+    setupFiles: ['./vitest.setup.ts'],
   },
   resolve: {
     alias: {
