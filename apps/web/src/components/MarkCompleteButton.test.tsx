@@ -14,7 +14,10 @@ describe('MarkCompleteButton', () => {
     await Promise.resolve();
     expect(action).toHaveBeenCalled();
     await waitFor(() => {
-      expect((screen.getByRole('button') as HTMLButtonElement).disabled).toBe(true);
+      const b = screen.getByRole('button') as HTMLButtonElement;
+      expect(b.disabled).toBe(true);
+      expect(b.title.toLowerCase()).toContain('completed');
+      expect(b.textContent?.toLowerCase() || '').toMatch(/completed|working/);
     });
   });
 });
