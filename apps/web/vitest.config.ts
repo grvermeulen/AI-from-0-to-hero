@@ -12,9 +12,11 @@ export default defineConfig({
       'src/app/layout.ssr.test.tsx',
       'src/app/(public)/profile/page.ssr.test.tsx',
       'src/app/api/**/*.test.ts',
+      'src/components/**/*.test.tsx',
     ],
     environmentMatchGlobs: [
       ['src/app/**/*.ssr.test.tsx', 'node'],
+      ['src/components/**/*.test.tsx', 'jsdom'],
     ],
     coverage: {
       provider: 'v8',
