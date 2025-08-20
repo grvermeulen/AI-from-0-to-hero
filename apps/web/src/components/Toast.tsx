@@ -1,4 +1,5 @@
 "use client";
+import React from 'react';
 import { useEffect, useState } from 'react';
 
 export default function Toast({ message, duration = 2000 }: { message: string; duration?: number }) {
@@ -18,5 +19,3 @@ export default function Toast({ message, duration = 2000 }: { message: string; d
     </div>
   );
 }
-
-

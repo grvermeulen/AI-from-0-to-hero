@@ -20,7 +20,7 @@ export default async function ProfilePage() {
                 <div className="mt-2">
                   <div className="font-semibold">Recent Badges</div>
                   <ul className="flex flex-wrap gap-3 items-center text-sm text-gray-700">
-                    {data.badges.slice(0, 5).map((b: any) => (
+                    {data.badges.slice(0, 5).map((b: { id: string; name: string; icon?: string | null }) => (
                       <li key={b.id} className="flex items-center gap-2 border rounded-md px-2 py-1">
                         <span aria-hidden="true" className="text-lg leading-none">{b.icon ?? '🏆'}</span>
                         <span className="whitespace-nowrap">{b.name}</span>
@@ -48,7 +48,7 @@ export default async function ProfilePage() {
                 <div className="font-semibold">Your Badges</div>
                 {data.badgesEarned?.length ? (
                   <ul className="mt-2 grid gap-2">
-                    {data.badgesEarned.map((b: any) => (
+                    {data.badgesEarned.map((b: { id: string; name: string; icon?: string | null; percentUsers?: number }) => (
                       <li key={b.id} className="flex items-center justify-between rounded-md border px-2 py-1 text-sm">
                         <span className="flex items-center gap-2"><span aria-hidden className="text-lg">{b.icon ?? '🏆'}</span>{b.name}</span>
                         {typeof b.percentUsers === 'number' ? <span className="text-gray-500">{b.percentUsers}%</span> : null}
@@ -64,7 +64,7 @@ export default async function ProfilePage() {
                 <div className="font-semibold">Available Badges</div>
                 {data.badgesAvailable?.length ? (
                   <ul className="mt-2 grid gap-2">
-                    {data.badgesAvailable.map((b: any) => (
+                    {data.badgesAvailable.map((b: { id: string; name: string; icon?: string | null; percentUsers?: number }) => (
                       <li key={b.id} className="flex items-center justify-between rounded-md border px-2 py-1 text-sm">
                         <span className="flex items-center gap-2"><span aria-hidden className="text-lg">{b.icon ?? '🏆'}</span>{b.name}</span>
                         {typeof b.percentUsers === 'number' ? <span title="Percentage of users with this badge" className="text-gray-500">{b.percentUsers}%</span> : null}

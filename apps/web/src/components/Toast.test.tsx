@@ -1,18 +1,28 @@
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+(globalThis as any).React = React;
+import { render, screen, cleanup, act } from '@testing-library/react';
 import Toast from './Toast';
 
 describe('Toast', () => {
-  it('renders message and auto-hides after duration', async () => {
+  afterEach(() => cleanup());
+  it('renders message', () => {
+    render(<Toast message="Saved" duration={50} />);
+    const el = screen.getByRole('status');
+    expect((el.textContent || '').includes('Saved')).toBe(true);
+  });
+
+  it('hides after duration elapses', async () => {
     vi.useFakeTimers();
-    render(<Toast message="Saved" duration={1000} />);
-    expect(screen.getByRole('status')).toHaveTextContent('Saved');
-    vi.advanceTimersByTime(1000);
-    await Promise.resolve();
+    render(<Toast message="Bye" duration={1} />);
+    // initially visible
+    expect(screen.getByRole('status')).toBeTruthy();
+    // advance timers to trigger close
+    await act(async () => {
+      vi.runAllTimers();
+      await Promise.resolve();
+    });
     expect(screen.queryByRole('status')).toBeNull();
     vi.useRealTimers();
   });
 });
-
-
