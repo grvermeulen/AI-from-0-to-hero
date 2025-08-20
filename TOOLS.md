@@ -83,6 +83,13 @@ Note: Some MCP integrations are used by the AI agent; for manual equivalents use
 - Local: `pnpm --filter web test --run --coverage` writes `apps/web/coverage/lcov.info`
 - CI: uploads coverage to Codecov; set `CODECOV_TOKEN` repo secret or install the Codecov app
 
+### Codecov AI (Beta)
+- Docs: [Codecov AI docs](https://docs.codecov.com/docs/beta-codecov-ai)
+- Commands to comment on a PR:
+  - `@codecov-ai-reviewer review` — ask for a review of the PR and suggestions
+  - `@codecov-ai-reviewer test` — ask to generate tests for uncovered changes
+- Ensure the Codecov AI GitHub App is installed for this repository/org, then post the commands as PR comments.
+
 ### Local CI Guard (Husky)
 - We use Husky Git hooks to prevent pushing code that will fail CI.
 - Pre-push hook (stored at `.husky/pre-push`) runs:
