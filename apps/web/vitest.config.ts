@@ -23,6 +23,7 @@ export default defineConfig({
       reporter: ['text-summary', 'lcov'],
       include: ['src/**/*.{ts,tsx}'],
     },
+    setupFiles: ['./vitest.setup.ts'],
   },
   resolve: {
     alias: {

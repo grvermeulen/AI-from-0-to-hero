@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "NEXT_DISABLE_ESLINT=1 next build",
     "start": "next start",
-    "lint": "echo 'skip lint for initial scaffold'",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest",
     "test:ci": "vitest --run --coverage"
