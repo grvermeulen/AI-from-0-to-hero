@@ -27,7 +27,7 @@ function parseOrigin() {
 
 async function getNgrokPublicUrl() {
   // Allow overriding the base URL directly (e.g., Cloudflare Tunnel or manual ngrok URL)
-  const override = process.env.WEBHOOK_BASE_URL || process.env.WEBHOOK_PUBLIC_BASE_URL;
+  const override = process.env.WEBHOOK_BASE_URL || process.env.WEBHOOK_PUBLIC_BASE_URL || 'https://informed-partly-piranha.ngrok-free.app';
   if (override) return override.replace(/\/$/, '');
 
   const api = process.env.NGROK_API_URL || 'http://127.0.0.1:4040/api/tunnels';

@@ -21,17 +21,21 @@ const { recordXpEvent } = await import('@/server/xp');
 const { POST } = await import('./route');
 
 describe('POST /api/ai/evaluate/code', () => {
-  const env = process.env;
+  const env = { ...process.env };
 
   beforeEach(() => {
     vi.resetAllMocks();
     (getCurrentSession as any).mockResolvedValue({ user: { id: 'u1' } });
-    process.env = { ...env };
-    delete process.env.DATABASE_URL;
+    vi.stubEnv('DATABASE_URL', '');
   });
 
   afterEach(() => {
-    process.env = env;
+    for (const key of Object.keys(process.env)) {
+      if (!(key in env)) delete (process.env as any)[key];
+    }
+    for (const [k, v] of Object.entries(env)) {
+      if (typeof v === 'string') vi.stubEnv(k, v);
+    }
   });
 
   it('401 when unauthenticated', async () => {
@@ -70,7 +74,7 @@ describe('POST /api/ai/evaluate/code', () => {
   });
 
   it('persists and awards XP when passing and DB available', async () => {
-    process.env.DATABASE_URL = 'postgres://demo';
+    vi.stubEnv('DATABASE_URL', 'postgres://demo');
     (db.submission.create as any).mockResolvedValue({ id: 's1' });
     (db.aIEvaluation.create as any).mockResolvedValue({ id: 'e1' });
 
@@ -87,7 +91,7 @@ describe('POST /api/ai/evaluate/code', () => {
   });
 
   it('returns persisted=false when DB write fails', async () => {
-    process.env.DATABASE_URL = 'postgres://demo';
+    vi.stubEnv('DATABASE_URL', 'postgres://demo');
     (db.submission.create as any).mockRejectedValue(new Error('fail'));
     const req = new Request('http://localhost/api/ai/evaluate/code', {
       method: 'POST',

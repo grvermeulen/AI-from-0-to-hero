@@ -93,6 +93,7 @@ Note: Some MCP integrations are used by the AI agent; for manual equivalents use
 ### Local CI Guard (Husky)
 - We use Husky Git hooks to prevent pushing code that will fail CI.
 - Pre-push hook (stored at `.husky/pre-push`) runs:
+  - Ensures the local webhook listener (`node .agent/watch-inbox.js`) is running; if not, it starts it in the background and logs to `/tmp/ai-from-0-to-hero-agent-watch.log`.
   - `pnpm -r typecheck`
   - `pnpm --filter web test:ci`
 - If either command fails, the push is blocked. Fix locally and retry.

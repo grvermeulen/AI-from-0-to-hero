@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { isCsrfSafe } from './csrf';
 
 function makeReq(init: RequestInit & { url?: string } = {}) {
@@ -9,8 +9,8 @@ function makeReq(init: RequestInit & { url?: string } = {}) {
 describe('isCsrfSafe', () => {
   const env = process.env.NODE_ENV;
   // Ensure not short-circuiting in tests
-  beforeAll(() => { process.env.NODE_ENV = 'production'; });
-  afterAll(() => { process.env.NODE_ENV = env; });
+  beforeAll(() => { vi.stubEnv('NODE_ENV', 'production'); });
+  afterAll(() => { vi.stubEnv('NODE_ENV', env ?? ''); });
 
   it('allows same-site via Sec-Fetch-Site', () => {
     const req = makeReq({ headers: new Headers({ 'sec-fetch-site': 'same-site' }) });
