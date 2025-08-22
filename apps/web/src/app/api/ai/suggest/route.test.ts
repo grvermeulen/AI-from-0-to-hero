@@ -22,4 +22,3 @@ describe('ai/suggest POST', () => {
   });
 });
 
-
