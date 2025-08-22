@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { getServerTrpcCaller } from '@/server/trpcClient';
+import { cookies } from 'next/headers';
+import ClientProgressSync from './progress.client';
 
 type Params = { params: { slug: string } };
 
@@ -28,6 +30,7 @@ export default async function ModulePage({ params }: Params) {
   const { slug } = params;
   let data: { title: string; lessons: { slug: string; title: string }[]; labs: { id: string; title: string }[]; quizId?: string } =
     SAMPLE[slug] ?? { title: slug, lessons: [], labs: [] };
+  let completed = new Set<string>();
   try {
     const caller = await getServerTrpcCaller();
     const mod = await caller.module.getBySlug({ slug });
@@ -37,16 +40,37 @@ export default async function ModulePage({ params }: Params) {
       labs: mod.labs.map((l: any) => ({ id: l.id, title: l.title })),
       quizId: (mod.quizzes?.[0]?.id as string | undefined),
     };
+    // hydrate progress from tRPC when available
+    try {
+      const p = await caller.module.progressBySlug({ slug });
+      for (const s of p.slugs) completed.add(s);
+    } catch {}
   } catch {}
+  // naive per-lesson completion from cookie (for demo until we wire a real progress table)
+  // Cookie fallback remains for unauthenticated users
+  try {
+    const c = cookies();
+    const val = c.get('completed_lessons')?.value;
+    if (val) {
+      for (const s of val.split(',')) completed.add(s);
+    }
+  } catch {}
+
   return (
     <main className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-bold">{data.title}</h1>
+      <ClientProgressSync initialSlugs={[...completed]} />
       <section className="mt-6">
         <h2 className="text-xl font-semibold">Lessons</h2>
         <ul className="mt-2 grid gap-2">
           {data.lessons.map((l) => (
             <li key={l.slug}>
-              <Link className="underline" href={`/lesson/${l.slug}`}>{l.title}</Link>
+              <Link className="underline" href={`/lesson/${l.slug}`}>
+                <span className="inline-flex items-center gap-2">
+                  <span aria-hidden className={`inline-block h-2 w-2 rounded-full ${completed.has(l.slug) ? 'bg-green-600' : 'bg-gray-300'}`} />
+                  {l.title}
+                </span>
+              </Link>
             </li>
           ))}
           {data.lessons.length === 0 && <li className="text-sm text-gray-500">No lessons yet.</li>}

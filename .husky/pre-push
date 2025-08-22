@@ -1,6 +1,19 @@
 #!/usr/bin/env sh
 # Husky v10 does not require sourcing husky.sh
 
+printf "[pre-push] Ensuring webhook listener is running...\n"
+# Start the local agent webhook watcher in the background if it's not already running
+if command -v pgrep >/dev/null 2>&1; then
+  if pgrep -f \.agent/watch-inbox\.js >/dev/null 2>&1; then
+    printf "[pre-push] Webhook listener already running.\n"
+  else
+    nohup node .agent/watch-inbox.js >> /tmp/ai-from-0-to-hero-agent-watch.log 2>&1 &
+    printf "[pre-push] Started webhook listener in background (log: /tmp/ai-from-0-to-hero-agent-watch.log).\n"
+  fi
+else
+  printf "[pre-push] 'pgrep' not found; skipping auto-start of webhook listener.\n"
+fi
+
 printf "[pre-push] Typechecking...\n"
 pnpm -r typecheck || exit 1
 

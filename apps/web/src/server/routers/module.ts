@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { createTRPCRouter, publicProcedure, adminProcedure } from '@/server/trpc';
+import { createTRPCRouter, publicProcedure, adminProcedure, protectedProcedure } from '@/server/trpc';
 
 export const moduleRouter = createTRPCRouter({
   listByTrack: publicProcedure
@@ -25,6 +25,25 @@ export const moduleRouter = createTRPCRouter({
       });
       if (!mod) throw new TRPCError({ code: 'NOT_FOUND', message: 'Module not found' });
       return mod;
+    }),
+
+  progressBySlug: protectedProcedure
+    .input(z.object({ slug: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.session!.user!.id;
+      const mod = await ctx.db.module.findUnique({
+        where: { slug: input.slug },
+        include: { lessons: { select: { id: true, slug: true } } },
+      });
+      if (!mod) throw new TRPCError({ code: 'NOT_FOUND', message: 'Module not found' });
+      if (mod.lessons.length === 0) return { slugs: [] as string[] } as const;
+      const lessonIds = mod.lessons.map((l) => l.id);
+      const progress = await ctx.db.lessonProgress.findMany({
+        where: { userId, lessonId: { in: lessonIds } },
+        include: { lesson: { select: { slug: true } } },
+      });
+      const slugs = progress.map((p) => p.lesson.slug);
+      return { slugs } as const;
     }),
 
   upsert: adminProcedure

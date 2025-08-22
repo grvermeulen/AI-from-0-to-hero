@@ -13,6 +13,7 @@
     "test:ci": "vitest --run --coverage"
   },
   "dependencies": {
+    "@sentry/nextjs": "^8.26.0",
     "@prisma/client": "6.13.0",
     "@tanstack/react-query": "^5.51.23",
     "@trpc/client": "^10.45.2",

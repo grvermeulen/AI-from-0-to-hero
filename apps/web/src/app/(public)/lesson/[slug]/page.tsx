@@ -2,7 +2,10 @@ import { remark } from 'remark';
 import html from 'remark-html';
 import PromptWidget from '@/components/PromptWidget';
 import { CommandExercise, CodeExercise } from '@/components/Exercise';
+import Toast from '@/components/Toast';
+import MarkCompleteButton from '@/components/MarkCompleteButton';
 import { getServerTrpcCaller } from '@/server/trpcClient';
+import { cookies } from 'next/headers';
 
 type Params = { params: { slug: string } };
 
@@ -21,14 +24,50 @@ export default async function LessonPage({ params }: Params) {
   } catch {}
   const processed = await remark().use(html).process(data.contentMd);
   const contentHtml = processed.toString();
+  let isCompleted = false;
+  try {
+    const c = cookies();
+    const val = c.get('completed_lessons')?.value || '';
+    if (val) {
+      const set = new Set(val.split(','));
+      isCompleted = set.has(slug);
+    }
+  } catch {}
   let attempts: Array<{ id: string; createdAt: string; status: string; score: number | null; feedback: string | null }> = [] as any;
   try {
     const caller = await getServerTrpcCaller();
     attempts = await caller.lesson.attempts({ slug, take: 5 });
   } catch {}
+  async function markComplete() {
+    'use server';
+    try {
+      const caller = await getServerTrpcCaller();
+      // fetch lesson to get id if needed
+      let lessonId: string | null = null;
+      try {
+        const lesson = await caller.lesson.get({ slug });
+        lessonId = (lesson as any).id || null;
+      } catch {}
+      if (lessonId) {
+        await caller.lesson.complete({ lessonId });
+      }
+    } finally {
+      const c = cookies();
+      const key = 'completed_lessons';
+      const existing = c.get(key)?.value || '';
+      const set = new Set(existing ? existing.split(',') : []);
+      set.add(slug);
+      c.set(key, Array.from(set).join(','), { httpOnly: false, path: '/' });
+    }
+  }
+
   return (
     <main className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-bold">{data.title}</h1>
+      <form action={markComplete} className="mt-2">
+        <MarkCompleteButton slug={slug} action={markComplete} defaultCompleted={isCompleted} />
+      </form>
+      {isCompleted && <Toast message="Marked as complete" />}
       <article className="prose mt-4" dangerouslySetInnerHTML={{ __html: contentHtml }} />
       <PromptWidget initialPrompt={`Generate 3 Playwright API test ideas for the lesson: ${data.title}. Include one negative case.`} />
       <CommandExercise lessonSlug={slug} title={`Commands: init → add → commit`} />

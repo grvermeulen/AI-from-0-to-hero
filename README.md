@@ -11,9 +11,9 @@ AI‑First QA Training Platform — Build Progress
 - [x] 5. Wire public/authed/admin tRPC routers
 - [x] 6. Build Home, Catalog, Lesson, Lab Runner, Quiz, Profile screens
 - [x] 7. Add XP engine + badges + leaderboards
-- [ ] 8. Integrate AI prompt widgets; ReadyAPI → Playwright template
-- [ ] 9. Testing: unit/integration/e2e; Axe + Lighthouse
-- [ ] 10. Observability: pino logs; healthcheck; Sentry (optional)
+- [x] 8. Integrate AI prompt widgets; ReadyAPI → Playwright template
+- [x] 9. Security & Compliance: rate limits, CSRF, secure cookies, GDPR endpoints
+- [x] 10. Observability: pino logs + request IDs; healthcheck (with DB)
 - [ ] 11. CI/CD with GitHub Actions + Railway; migrations on boot
 - [ ] 12. Docs: ARCHITECTURE, SECURITY, ADRs; admin provisioning
   - [ ] Security hardening follow-ups:

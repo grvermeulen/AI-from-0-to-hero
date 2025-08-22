@@ -38,7 +38,18 @@ const t = initTRPC.context<TRPCContext>().create({
 });
 
 export const createTRPCRouter = t.router;
-export const publicProcedure = t.procedure;
+export const publicProcedure = t.procedure.use(async ({ ctx, next, path, type, input }) => {
+  const start = Date.now();
+  try {
+    return await next();
+  } finally {
+    const ms = Date.now() - start;
+    try {
+      const { log } = await import('./logger');
+      log.info({ path, type, ms }, 'tRPC');
+    } catch {}
+  }
+});
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
   // Dev fallback: when offline mode, allow a synthetic session
   if (!ctx.session?.user) {

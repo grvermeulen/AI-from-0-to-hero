@@ -19,10 +19,10 @@ Local development:
    - Content type: `application/json`
    - Secret: `GITHUB_WEBHOOK_SECRET`
    - Events: send me everything, or select the list above.
-4. Auto‑update the webhook URL to the current ngrok URL (requires ngrok running and `GITHUB_TOKEN`):
-   - Export once in your shell: `export GITHUB_TOKEN=<your PAT with repo scope>`
+4. Auto‑update the webhook URL (requires `GITHUB_TOKEN`). If you have a static tunnel domain (preferred), set:
+   - `export WEBHOOK_BASE_URL=https://informed-partly-piranha.ngrok-free.app`
    - Run: `pnpm agent:webhook:update`
-   - This reads `http://127.0.0.1:4040/api/tunnels`, finds the hook for `/api/github/webhook`, and updates it. If missing, it creates one (uses `GITHUB_WEBHOOK_SECRET` if set).
+   - Without a static domain, the updater reads `http://127.0.0.1:4040/api/tunnels` and updates the hook to the current URL.
 5. In another terminal, watch the inbox to trigger agent polling: `pnpm agent:watch`
 
 Notes:
@@ -30,4 +30,3 @@ Notes:
 - If no `GITHUB_WEBHOOK_SECRET` is set and `NODE_ENV !== 'production'`, signature verification is skipped for convenience.
 - Forwarding includes `x-github-event` and `x-github-delivery` headers and an optional `x-agent-signature-256` HMAC.
 - For posting PR review comments automatically, export `GITHUB_TOKEN` before running the watcher/reviewer.
- - For posting PR review comments automatically, export `GITHUB_TOKEN` before running the watcher/reviewer.

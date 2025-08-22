@@ -39,6 +39,26 @@ Add a new section above for each subsequent step in the README plan.
 
 ---
 
+## Step: Gamification + AI widgets + UX pass
+- What went well:
+  - Implemented XP service with badge auto-award; seeded badges and surfaced on profile.
+  - Added AI prompt widgets and evaluate endpoints (command/code) with offline heuristics and persistence.
+  - Improved UX: lesson exercises, lab split-pane, quiz autosave, accessibility (fieldset/legend, aria-live), login status and sign-out.
+  - Added AI suggest streaming + non-streaming with rate limiting.
+  - Persisted lesson completion (`LessonProgress`), ticks on module page, and optimistic client updates with toast feedback.
+- What didn’t go well:
+  - Early SSR imports of unstable auth led to runtime errors; needed indirection helper.
+  - Prisma client import and generated types caused test env friction until centralized.
+  - Some assertions were brittle to SSR output; needed relaxed checks.
+- Improvements (process/tooling):
+  - Centralize server utilities (`session`, `logger`, `xp`) and prefer tRPC server calls behind typed procedures.
+  - Add rate limiting to all public AI/evaluate POSTs by default; codify helper usage.
+  - Favor cookie/localStorage hydration patterns for optimistic UX, then backfill server persistence.
+- Action items (next step):
+  - Security section: CSRF tokens for state-changing public POSTs; secure cookies; GDPR export/delete endpoints.
+  - Observability: DB health check, tRPC logging with correlation IDs.
+  - Tests: add coverage for ai/suggest (stream+post), module.progressBySlug, and CSRF guards.
+
 ## Working agreements (from shared memory)
 These are persistent preferences/agreements we keep in memory and follow across steps. We’ll update this list whenever we update our memory.
 

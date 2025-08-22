@@ -18,4 +18,6 @@ export function getRequestId(req: Request): string {
   return header || Math.random().toString(36).slice(2);
 }
 
+export const log = createLogger();
+
 

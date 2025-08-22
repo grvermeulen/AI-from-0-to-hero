@@ -1,5 +1,7 @@
 export const runtime = 'nodejs';
 
+import { checkRateLimit, getClientIp } from '@/server/rateLimit';
+
 function writeChunk(writer: WritableStreamDefaultWriter, text: string) {
   const enc = new TextEncoder();
   return writer.write(enc.encode(text));
@@ -10,6 +12,12 @@ export async function GET(req: Request) {
   const prompt = url.searchParams.get('q') || '';
   if (!prompt) {
     return new Response('Missing q', { status: 400 });
+  }
+
+  const ip = getClientIp(req);
+  const rl = checkRateLimit({ key: `ai:suggest:stream:${ip}`, limit: 30, windowMs: 60 * 1000 });
+  if (!rl.allowed) {
+    return new Response('Too Many Requests', { status: 429, headers: { 'retry-after': String(rl.retryAfter || 60) } });
   }
 
   const { readable, writable } = new TransformStream();
