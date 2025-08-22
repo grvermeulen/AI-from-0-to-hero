@@ -33,4 +33,3 @@ describe('LabPage SSR', () => {
   }, 15000);
 });
 
-
