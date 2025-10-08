@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, protectedProcedure, resolveDbUserIdFromSession } from '@/server/trpc';
+import * as Sentry from '@sentry/nextjs';
 import { offlineMode } from '@/server/env';
 type SubmissionStatus = 'PENDING' | 'PASSED' | 'FAILED';
 const SubmissionStatus = { PASSED: 'PASSED' as SubmissionStatus, FAILED: 'FAILED' as SubmissionStatus };
@@ -22,10 +23,10 @@ export const quizRouter = createTRPCRouter({
         } as const;
         return { id: stub.id, title: stub.title, questions: stub.questions };
       }
-      const quiz = await ctx.db.quiz.findUnique({
+      const quiz = await Sentry.startSpan({ op: 'db.query', name: 'quiz.findUnique' }, async () => ctx.db.quiz.findUnique({
         where: { id: input.quizId },
         include: { questions: true },
-      });
+      }));
       if (!quiz) throw new TRPCError({ code: 'NOT_FOUND', message: 'Quiz not found' });
       // Hide answers when starting quiz
       const questions = quiz.questions.map((q: any) => ({ id: q.id, kind: q.kind, prompt: q.prompt, options: q.options }));
@@ -58,7 +59,7 @@ export const quizRouter = createTRPCRouter({
         const status: SubmissionStatus = score >= 80 ? SubmissionStatus.PASSED : SubmissionStatus.FAILED;
         return { id: 'stub-submission', status, score };
       }
-      const quiz = await ctx.db.quiz.findUnique({ where: { id: input.quizId }, include: { questions: true } });
+      const quiz = await Sentry.startSpan({ op: 'db.query', name: 'quiz.findUnique' }, async () => ctx.db.quiz.findUnique({ where: { id: input.quizId }, include: { questions: true } }));
       if (!quiz) throw new TRPCError({ code: 'NOT_FOUND', message: 'Quiz not found' });
 
       const total = quiz.questions.length || 1;
@@ -69,7 +70,7 @@ export const quizRouter = createTRPCRouter({
       const score = Math.round((correct / total) * 100);
       const status: SubmissionStatus = score >= 80 ? SubmissionStatus.PASSED : SubmissionStatus.FAILED;
 
-      const submission = await ctx.db.submission.create({
+      const submission = await Sentry.startSpan({ op: 'db.query', name: 'submission.create' }, async () => ctx.db.submission.create({
         data: {
           userId,
           quizId: quiz.id,
@@ -77,10 +78,10 @@ export const quizRouter = createTRPCRouter({
           status,
           score,
         },
-      });
-      await recordXpEvent(ctx, { userId, kind: 'quiz_submit', amount: 10 });
+      }));
+      await Sentry.startSpan({ op: 'xp', name: 'record quiz_submit' }, async () => recordXpEvent(ctx, { userId, kind: 'quiz_submit', amount: 10 }));
       if (status === SubmissionStatus.PASSED) {
-        await recordXpEvent(ctx, { userId, kind: 'quiz_pass', amount: 25 });
+        await Sentry.startSpan({ op: 'xp', name: 'record quiz_pass' }, async () => recordXpEvent(ctx, { userId, kind: 'quiz_pass', amount: 25 }));
       }
       return { id: submission.id, status, score };
     }),

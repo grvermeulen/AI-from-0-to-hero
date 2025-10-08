@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { getCurrentSession } from '@/server/session';
 import { db } from '@/server/db';
 import { recordXpEvent } from '@/server/xp';
+import * as Sentry from '@sentry/nextjs';
 
 export const runtime = 'nodejs';
 
@@ -81,11 +82,14 @@ export async function POST(req: Request) {
     });
 
     if (passed) {
-      await recordXpEvent({ db, session } as any, { userId: session.user.id, kind: 'exercise_pass', amount: 10 });
+      await Sentry.startSpan({ op: 'xp', name: 'record exercise_pass' }, async () =>
+        recordXpEvent({ db, session } as any, { userId: session.user.id, kind: 'exercise_pass', amount: 10 }),
+      );
     }
 
     return NextResponse.json({ score, pass: passed, feedback, submissionId: submission.id, persisted: true });
   } catch (e) {
+    Sentry.captureException(e);
     return NextResponse.json({ error: 'PERSIST_FAILED', message: 'Saved result could not be persisted. Please retry later.', score, pass: passed, feedback, persisted: false }, { status: 200 });
   }
 }

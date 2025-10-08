@@ -1,6 +1,8 @@
 import { remark } from 'remark';
 import html from 'remark-html';
 import PromptWidget from '@/components/PromptWidget';
+import * as Sentry from '@sentry/nextjs';
+import MarkCompleteButton from '@/components/MarkCompleteButton';
 import { CommandExercise, CodeExercise } from '@/components/Exercise';
 import { getServerTrpcCaller } from '@/server/trpcClient';
 
@@ -8,6 +10,10 @@ type Params = { params: { slug: string } };
 
 const SAMPLE_LESSONS: Record<string, { title: string; contentMd: string }> = {
   'intro-to-git': { title: 'Intro to Git', contentMd: '# Git Basics\n\nLearn init/add/commit.' },
+  'git-branching-merging': { title: 'Branching & Merging', contentMd: '# Branching & Merging\n\nFeature branches; fast-forward vs merge commits.' },
+  'git-pull-requests': { title: 'Pull Requests & Code Review', contentMd: '# Pull Requests & Code Review\n\nPR flow and etiquette.' },
+  'git-rebase-history': { title: 'Rebasing & History Hygiene', contentMd: '# Rebasing & History Hygiene\n\nInteractive rebase, squash, amend.' },
+  'git-conflicts': { title: 'Resolving Conflicts', contentMd: '# Resolving Conflicts\n\nStrategies and pitfalls.' },
   'ts-basics': { title: 'TypeScript Basics', contentMd: '# TS Basics\n\nTypes, interfaces, generics.' },
 };
 
@@ -16,20 +22,36 @@ export default async function LessonPage({ params }: Params) {
   let data = SAMPLE_LESSONS[slug] ?? { title: slug, contentMd: 'Content coming soon.' };
   try {
     const caller = await getServerTrpcCaller();
-    const lesson = await caller.lesson.get({ slug });
+    const lesson = await Sentry.startSpan({ op: 'db.query', name: 'lesson.get' }, async () => caller.lesson.get({ slug }));
     data = { title: lesson.title, contentMd: lesson.contentMd };
-  } catch {}
+  } catch (error) {
+    Sentry.captureException(error);
+  }
   const processed = await remark().use(html).process(data.contentMd);
   const contentHtml = processed.toString();
+  async function markComplete() {
+    'use server';
+    const caller = await getServerTrpcCaller();
+    try {
+      // Fetch the lesson to obtain a stable id, then record completion
+      const lesson = await caller.lesson.get({ slug });
+      await Sentry.startSpan({ op: 'db.mutation', name: 'lesson.complete' }, async () => caller.lesson.complete({ lessonId: lesson.id }));
+    } catch {}
+  }
   let attempts: Array<{ id: string; createdAt: string; status: string; score: number | null; feedback: string | null }> = [] as any;
   try {
     const caller = await getServerTrpcCaller();
-    attempts = await caller.lesson.attempts({ slug, take: 5 });
-  } catch {}
+    attempts = await Sentry.startSpan({ op: 'db.query', name: 'lesson.attempts' }, async () => caller.lesson.attempts({ slug, take: 5 }));
+  } catch (error) {
+    Sentry.captureException(error);
+  }
   return (
     <main className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-bold">{data.title}</h1>
       <article className="prose mt-4" dangerouslySetInnerHTML={{ __html: contentHtml }} />
+      <div className="mt-3">
+        <MarkCompleteButton slug={slug} action={markComplete} />
+      </div>
       <PromptWidget initialPrompt={`Generate 3 Playwright API test ideas for the lesson: ${data.title}. Include one negative case.`} />
       <CommandExercise lessonSlug={slug} title={`Commands: init → add → commit`} />
       <CodeExercise lessonSlug={slug} title={`Code: Write a basic Playwright API test`} />

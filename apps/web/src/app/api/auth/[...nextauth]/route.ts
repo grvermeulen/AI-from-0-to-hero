@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 import { authOptions } from '@/server/auth';
+import * as Sentry from '@sentry/nextjs';
 import { checkRateLimit } from '@/server/rateLimit';
 
 const handler = async (req: Request, ctx?: unknown) => {
@@ -12,7 +13,12 @@ const handler = async (req: Request, ctx?: unknown) => {
   }
   // Delegate to NextAuth handler
   const nextAuthHandler = NextAuth(authOptions);
-  return (nextAuthHandler as unknown as (req: Request, ctx?: unknown) => Promise<Response>)(req, ctx);
+  try {
+    return (nextAuthHandler as unknown as (req: Request, ctx?: unknown) => Promise<Response>)(req, ctx);
+  } catch (e) {
+    Sentry.captureException(e);
+    throw e;
+  }
 };
 export { handler as GET, handler as POST };
 

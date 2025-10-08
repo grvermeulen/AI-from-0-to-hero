@@ -1,9 +1,10 @@
 import { getServerTrpcCaller } from '@/server/trpcClient';
+import * as Sentry from '@sentry/nextjs';
 
 export default async function ProfilePage() {
   const caller = await getServerTrpcCaller();
   try {
-    const data = await caller.me.progress();
+    const data = await Sentry.startSpan({ op: 'db.query', name: 'me.progress' }, async () => caller.me.progress());
     return (
       <main className="mx-auto max-w-5xl p-6">
         <h1 className="text-2xl font-bold">Your Profile</h1>

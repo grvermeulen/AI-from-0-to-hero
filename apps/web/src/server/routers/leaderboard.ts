@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/server/trpc';
+import * as Sentry from '@sentry/nextjs';
 
 export const leaderboardRouter = createTRPCRouter({
   top: publicProcedure
@@ -11,18 +12,18 @@ export const leaderboardRouter = createTRPCRouter({
       }
       const since = input.period === 'weekly' ? new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) : undefined;
 
-      const groups = await ctx.db.xPEvent.groupBy({
+      const groups = await Sentry.startSpan({ op: 'db.query', name: 'xp.groupBy' }, async () => ctx.db.xPEvent.groupBy({
         by: ['userId'],
         _sum: { amount: true },
         ...(since ? { where: { createdAt: { gte: since } } } : {}),
         orderBy: { _sum: { amount: 'desc' } },
         take: input.limit,
-      });
+      }));
 
-      const users = await ctx.db.user.findMany({
+      const users = await Sentry.startSpan({ op: 'db.query', name: 'user.findMany' }, async () => ctx.db.user.findMany({
         where: { id: { in: groups.map((g: { userId: string }) => g.userId) } },
         include: { profile: true },
-      });
+      }));
       const idToName = new Map(users.map((u: { id: string; profile: { displayName?: string | null } | null; email: string | null }) => [u.id, u.profile?.displayName || u.email]));
       return groups.map((g: { userId: string; _sum: { amount: number | null } }, idx: number) => ({ rank: idx + 1, userId: g.userId, label: (idToName.get(g.userId) as string | undefined) || g.userId, xp: g._sum.amount || 0 }));
     }),

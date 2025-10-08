@@ -8,6 +8,10 @@ const SAMPLE: Record<string, { title: string; lessons: { slug: string; title: st
     title: 'Foundation',
     lessons: [
       { slug: 'intro-to-git', title: 'Intro to Git' },
+      { slug: 'git-branching-merging', title: 'Branching & Merging' },
+      { slug: 'git-pull-requests', title: 'Pull Requests & Code Review' },
+      { slug: 'git-rebase-history', title: 'Rebasing & History Hygiene' },
+      { slug: 'git-conflicts', title: 'Resolving Conflicts' },
       { slug: 'ts-basics', title: 'TypeScript Basics' },
     ],
     labs: [{ id: 'seed-lab-1', title: 'Initialize a Repo' }],
