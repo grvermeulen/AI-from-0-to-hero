@@ -20,7 +20,7 @@ export async function GET(req: Request) {
   const apiKey = process.env.OPENAI_API_KEY;
   (async () => {
     try {
-      const span = Sentry.startSpan({ op: 'http.server', name: 'GET /api/ai/suggest/stream' });
+      const span = Sentry.startSpan({ op: 'http.server', name: 'GET /api/ai/suggest/stream' }, (s) => s);
       span.setAttribute('prompt.length', String(prompt.length));
       if (apiKey) {
         const resp = await fetch('https://api.openai.com/v1/chat/completions', {

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { axe, toHaveNoViolations } from 'jest-axe';
+import { axe, toHaveNoViolations } from 'vitest-axe';
 import PromptWidget from '@/components/PromptWidget';
 
 expect.extend(toHaveNoViolations);
