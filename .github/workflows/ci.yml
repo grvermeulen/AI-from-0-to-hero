@@ -22,7 +22,7 @@ jobs:
       - name: Approve dependency build scripts (Prisma)
         run: pnpm approve-builds
       - name: Generate Prisma Client
-        run: pnpm dlx prisma generate --schema prisma/schema.prisma
+        run: pnpm exec prisma generate --schema prisma/schema.prisma
       - run: pnpm lint && pnpm typecheck && pnpm --filter web test:ci
       - name: Lighthouse CI (URLs)
         run: pnpm --filter web lhci
