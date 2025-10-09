@@ -1,15 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import React from 'react';
 import { render } from '@testing-library/react';
-import { axe, toHaveNoViolations } from 'jest-axe';
+import { axe } from 'vitest-axe';
 
-expect.extend(toHaveNoViolations);
+// Assert on violations length instead of custom matcher
 
 describe('A11y smoke tests', () => {
   it('PromptWidget has no obvious a11y violations', async () => {
     const PromptWidget = (await import('@/components/PromptWidget')).default;
     const { container } = render(React.createElement(PromptWidget, { initialPrompt: 'test' }));
     const results = await axe(container);
-    expect(results).toHaveNoViolations();
+    expect(results.violations.length).toBe(0);
   });
 });

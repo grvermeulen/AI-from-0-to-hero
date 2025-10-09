@@ -37,7 +37,9 @@ function basicCodeHeuristics(code: string) {
 
 export async function POST(req: Request) {
   const session = await getCurrentSession();
-  if (!session?.user?.id) return NextResponse.json({ error: 'UNAUTHORIZED', message: 'Please login to submit exercises.' }, { status: 401 });
+  if (!session || !session.user || !session.user.id) {
+    return NextResponse.json({ error: 'UNAUTHORIZED', message: 'Please login to submit exercises.' }, { status: 401 });
+  }
   let body: z.infer<typeof BodySchema>;
   try {
     body = BodySchema.parse(await req.json());
@@ -54,9 +56,10 @@ export async function POST(req: Request) {
   }
 
   try {
+    const userId = session.user.id as string;
     const submission = await db.submission.create({
       data: {
-        userId: session.user.id,
+        userId,
         code,
         status: passed ? 'PASSED' : 'FAILED',
         score,
@@ -76,7 +79,7 @@ export async function POST(req: Request) {
 
     if (passed) {
       await Sentry.startSpan({ op: 'xp', name: 'record exercise_pass' }, async () =>
-        recordXpEvent({ db, session } as any, { userId: session.user.id, kind: 'exercise_pass', amount: 10 }),
+        recordXpEvent({ db, session } as any, { userId, kind: 'exercise_pass', amount: 10 }),
       );
     }
 

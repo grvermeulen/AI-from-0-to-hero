@@ -2,10 +2,10 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import React from 'react';
 (globalThis as any).React = React;
 import { render } from '@testing-library/react';
-import { axe, toHaveNoViolations } from 'vitest-axe';
+import { axe } from 'vitest-axe';
 import LessonPage from './[slug]/page';
 
-expect.extend(toHaveNoViolations);
+// toHaveNoViolations matcher is not typed in vitest-axe; compare violations length instead
 
 describe('Lesson page accessibility', () => {
   beforeEach(() => {
@@ -20,6 +20,6 @@ describe('Lesson page accessibility', () => {
     const jsx = await Comp({ params: { slug: 'intro-to-git' } });
     const { container } = render(jsx);
     const results = await axe(container);
-    expect(results).toHaveNoViolations();
+    expect(results.violations.length).toBe(0);
   }, 20000);
 });
