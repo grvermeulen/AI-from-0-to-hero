@@ -1,4 +1,5 @@
 import { getServerTrpcCaller } from '@/server/trpcClient';
+import * as Sentry from '@sentry/nextjs';
 import { redirect } from 'next/navigation';
 import SubmitButton from '@/components/SubmitButton';
 import PromptWidget from '@/components/PromptWidget';
@@ -19,7 +20,7 @@ export default async function LabPage({ params, searchParams }: Params & SearchP
     }
     const c = await getServerTrpcCaller();
     try {
-      const res = await c.lab.submit({ labId: id, repoUrl: repoUrl || undefined, code: code || undefined });
+      const res = await Sentry.startSpan({ op: 'rpc', name: 'lab.submit' }, async () => c.lab.submit({ labId: id, repoUrl: repoUrl || undefined, code: code || undefined }));
       const q = new URLSearchParams({ submissionId: res.id });
       redirect(`/lab/${id}?${q.toString()}`);
     } catch (e) {
@@ -28,7 +29,7 @@ export default async function LabPage({ params, searchParams }: Params & SearchP
   }
 
   try {
-    const lab = await caller.lab.start({ labId: id });
+    const lab = await Sentry.startSpan({ op: 'rpc', name: 'lab.start' }, async () => caller.lab.start({ labId: id }));
     return (
       <main className="max-w-3xl mx-auto p-6">
         <h1 className="text-2xl font-bold">{lab.title}</h1>

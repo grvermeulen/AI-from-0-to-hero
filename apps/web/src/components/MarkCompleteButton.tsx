@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import { useState, useTransition } from "react";
+import * as Sentry from "@sentry/nextjs";
 
 export default function MarkCompleteButton({
   slug,
@@ -18,8 +19,10 @@ export default function MarkCompleteButton({
     if (completed || isPending) return;
     startTransition(async () => {
       try {
-        await action();
-      } catch {}
+        await Sentry.startSpan({ op: 'ui.click', name: 'MarkCompleteButton' }, async () => action());
+      } catch (error) {
+        Sentry.captureException(error);
+      }
       try {
         const key = "completed_lessons";
         const existing = typeof window !== "undefined" ? window.localStorage.getItem(key) || "" : "";

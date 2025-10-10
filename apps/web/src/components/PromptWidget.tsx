@@ -1,20 +1,24 @@
 "use client";
 import { useState } from "react";
+import * as Sentry from "@sentry/nextjs";
 
 export default function PromptWidget({ initialPrompt }: { initialPrompt?: string }) {
   const [input, setInput] = useState(initialPrompt ?? "");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [streaming, setStreaming] = useState(false);
+  // Add basic ARIA labels for accessibility
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setResult(null);
     try {
-      // Try stream endpoint first
-      setStreaming(true);
-      const res = await fetch(`/api/ai/suggest/stream?q=${encodeURIComponent(input)}`);
+      await Sentry.startSpan({ op: "ui.click", name: "PromptWidget submit" }, async (span) => {
+        span.setAttribute("input.length", input.length);
+        // Try stream endpoint first
+        setStreaming(true);
+        const res = await fetch(`/api/ai/suggest/stream?q=${encodeURIComponent(input)}`);
       const reader = res.body?.getReader();
       if (reader) {
         const decoder = new TextDecoder();
@@ -27,12 +31,17 @@ export default function PromptWidget({ initialPrompt }: { initialPrompt?: string
         }
         setStreaming(false);
         setResult(acc);
-        return;
+          span.setAttribute("result.length", acc.length);
+          return;
       }
       // Fallback to non-streaming
       const res2 = await fetch("/api/ai/suggest", { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: input }) });
       const json = await res2.json();
       setResult(json?.suggestion ?? '');
+        span.setAttribute("fallback", true);
+      });
+    } catch (error) {
+      Sentry.captureException(error as any);
     } finally {
       setLoading(false);
     }
@@ -43,6 +52,7 @@ export default function PromptWidget({ initialPrompt }: { initialPrompt?: string
       <h2 className="text-lg font-semibold">AI Prompt (draft)</h2>
       <form onSubmit={onSubmit} className="mt-3 grid gap-2">
         <textarea
+          aria-label="AI prompt input"
           className="min-h-[100px] rounded border p-2"
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -68,7 +78,7 @@ export default function PromptWidget({ initialPrompt }: { initialPrompt?: string
         </button>
       </div>
       {result !== null && (
-        <div className="mt-3 rounded border bg-gray-50 p-3 text-sm whitespace-pre-wrap">
+        <div className="mt-3 rounded border bg-gray-50 p-3 text-sm whitespace-pre-wrap" role="region" aria-live="polite">
           {result}
           {streaming && <span className="animate-pulse">▍</span>}
         </div>

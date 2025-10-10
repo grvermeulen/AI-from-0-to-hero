@@ -1,4 +1,5 @@
 import { getServerTrpcCaller } from '@/server/trpcClient';
+import * as Sentry from '@sentry/nextjs';
 import { redirect } from 'next/navigation';
 import SubmitButton from '@/components/SubmitButton';
 import QuizQuestions from '@/components/QuizQuestions';
@@ -20,7 +21,7 @@ export default async function QuizPage({ params, searchParams }: Params & Search
     const c = await getServerTrpcCaller();
     let res;
     try {
-      res = await c.quiz.submit({ quizId: id, answers });
+      res = await Sentry.startSpan({ op: 'rpc', name: 'quiz.submit' }, async () => c.quiz.submit({ quizId: id, answers }));
     } catch {
       redirect(`/quiz/${id}?error=1`);
     }
@@ -29,7 +30,7 @@ export default async function QuizPage({ params, searchParams }: Params & Search
   }
 
   try {
-    const quiz = await caller.quiz.start({ quizId: id });
+    const quiz = await Sentry.startSpan({ op: 'rpc', name: 'quiz.start' }, async () => caller.quiz.start({ quizId: id }));
     return (
       <main className="max-w-3xl mx-auto p-6">
         <h1 className="text-2xl font-bold">{quiz.title}</h1>

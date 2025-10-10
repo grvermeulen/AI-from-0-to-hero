@@ -6,6 +6,8 @@ function writeChunk(writer: WritableStreamDefaultWriter, text: string) {
 }
 
 export async function GET(req: Request) {
+  // Instrument streaming with Sentry span
+  const Sentry = await import('@sentry/nextjs');
   const url = new URL(req.url);
   const prompt = url.searchParams.get('q') || '';
   if (!prompt) {
@@ -18,6 +20,8 @@ export async function GET(req: Request) {
   const apiKey = process.env.OPENAI_API_KEY;
   (async () => {
     try {
+      const span = Sentry.startSpan({ op: 'http.server', name: 'GET /api/ai/suggest/stream' }, (s) => s);
+      span.setAttribute('prompt.length', String(prompt.length));
       if (apiKey) {
         const resp = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
@@ -40,6 +44,7 @@ export async function GET(req: Request) {
           const txt = await resp.text();
           await writeChunk(writer, `Error: ${txt}`);
           await writer.close();
+          span.end();
           return;
         }
         // If provider returned non-streaming json, emit it once
@@ -49,11 +54,13 @@ export async function GET(req: Request) {
           const text = json?.choices?.[0]?.message?.content || '[no content]';
           await writeChunk(writer, text);
           await writer.close();
+          span.end();
           return;
         }
         if (!resp.body) {
           await writeChunk(writer, '[empty response]');
           await writer.close();
+          span.end();
           return;
         }
         const reader = resp.body.getReader();
@@ -71,6 +78,7 @@ export async function GET(req: Request) {
             const data = trimmed.replace(/^data:\s*/, '');
             if (data === '[DONE]') {
               await writer.close();
+              span.end();
               return;
             }
             try {
@@ -95,6 +103,8 @@ export async function GET(req: Request) {
         }
       }
     } catch (e) {
+      const Sentry2 = await import('@sentry/nextjs');
+      Sentry2.captureException(e);
       await writeChunk(writer, '\n[error streaming suggestion]');
     } finally {
       try { await writer.close(); } catch {}

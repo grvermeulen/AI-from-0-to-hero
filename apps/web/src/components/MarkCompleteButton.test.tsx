@@ -3,6 +3,7 @@ import React from 'react';
 // Some transforms may require React on global in tests
 (globalThis as any).React = React;
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { configureAxe } from 'vitest-axe';
 import MarkCompleteButton from './MarkCompleteButton';
 
 describe('MarkCompleteButton', () => {
@@ -52,5 +53,12 @@ describe('MarkCompleteButton', () => {
       expect(b.disabled).toBe(true);
     });
     setSpy.mockRestore();
+  });
+
+  it('has no obvious a11y violations', async () => {
+    const axe = configureAxe();
+    render(<MarkCompleteButton slug="intro-to-git" action={async () => {}} defaultCompleted={false} />);
+    const results = await axe(document.body);
+    expect(results.violations).toEqual([]);
   });
 });

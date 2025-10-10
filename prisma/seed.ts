@@ -33,7 +33,99 @@ async function main() {
     update: {},
   });
 
-  // Foundation: TS Basics lesson (under Git Basics module for now)
+  // Additional Git Basics lessons
+  await db.lesson.upsert({
+    where: { slug: 'git-branching-merging' },
+    create: {
+      slug: 'git-branching-merging',
+      title: 'Branching & Merging',
+      contentMd: '# Branching & Merging\n\nFeature branches; fast-forward vs merge commits.',
+      module: { connect: { slug: 'git-basics' } },
+      order: 3,
+    },
+    update: {},
+  });
+  await db.lesson.upsert({
+    where: { slug: 'git-pull-requests' },
+    create: {
+      slug: 'git-pull-requests',
+      title: 'Pull Requests & Code Review',
+      contentMd: '# Pull Requests & Code Review\n\nPR flow and etiquette.',
+      module: { connect: { slug: 'git-basics' } },
+      order: 4,
+    },
+    update: {},
+  });
+  await db.lesson.upsert({
+    where: { slug: 'git-rebase-history' },
+    create: {
+      slug: 'git-rebase-history',
+      title: 'Rebasing & History Hygiene',
+      contentMd: '# Rebasing & History Hygiene\n\nInteractive rebase, squash, amend.',
+      module: { connect: { slug: 'git-basics' } },
+      order: 5,
+    },
+    update: {},
+  });
+  await db.lesson.upsert({
+    where: { slug: 'git-conflicts' },
+    create: {
+      slug: 'git-conflicts',
+      title: 'Resolving Conflicts',
+      contentMd: '# Resolving Conflicts\n\nStrategies and pitfalls.',
+      module: { connect: { slug: 'git-basics' } },
+      order: 6,
+    },
+    update: {},
+  });
+
+  // Additional Git Basics lessons
+  await db.lesson.upsert({
+    where: { slug: 'git-branching-merging' },
+    create: {
+      slug: 'git-branching-merging',
+      title: 'Branching & Merging',
+      contentMd: '# Branching & Merging\n\nFeature branches; fast-forward vs merge commits.',
+      module: { connect: { slug: 'git-basics' } },
+      order: 3,
+    },
+    update: {},
+  });
+  await db.lesson.upsert({
+    where: { slug: 'git-pull-requests' },
+    create: {
+      slug: 'git-pull-requests',
+      title: 'Pull Requests & Code Review',
+      contentMd: '# Pull Requests & Code Review\n\nPR flow and etiquette.',
+      module: { connect: { slug: 'git-basics' } },
+      order: 4,
+    },
+    update: {},
+  });
+  await db.lesson.upsert({
+    where: { slug: 'git-rebase-history' },
+    create: {
+      slug: 'git-rebase-history',
+      title: 'Rebasing & History Hygiene',
+      contentMd: '# Rebasing & History Hygiene\n\nInteractive rebase, squash, amend.',
+      module: { connect: { slug: 'git-basics' } },
+      order: 5,
+    },
+    update: {},
+  });
+  await db.lesson.upsert({
+    where: { slug: 'git-conflicts' },
+    create: {
+      slug: 'git-conflicts',
+      title: 'Resolving Conflicts',
+      contentMd: '# Resolving Conflicts\n\nStrategies and pitfalls.',
+      module: { connect: { slug: 'git-basics' } },
+      order: 6,
+    },
+    update: {},
+  });
+
+  // Foundation: remaining Git Basics lessons
   await db.lesson.upsert({
     where: { slug: 'ts-basics' },
     create: {
@@ -43,6 +135,58 @@ async function main() {
         '# TS Basics\n\nLearn types, interfaces, generics, and strict mode.\n\n- Primitive and union types\n- Interfaces vs types\n- Generics for reusable utilities',
       module: { connect: { slug: 'git-basics' } },
       order: 2,
+    },
+    update: {},
+  });
+
+  await db.lesson.upsert({
+    where: { slug: 'git-branching-merging' },
+    create: {
+      slug: 'git-branching-merging',
+      title: 'Branching & Merging',
+      contentMd:
+        '# Branching & Merging\n\nCreate feature branches, merge via fast-forward, and resolve simple diverge cases.\n\n- `git switch -c feature/x`\n- Merge fast-forward vs merge commit',
+      module: { connect: { slug: 'git-basics' } },
+      order: 3,
+    },
+    update: {},
+  });
+
+  await db.lesson.upsert({
+    where: { slug: 'git-pull-requests' },
+    create: {
+      slug: 'git-pull-requests',
+      title: 'Pull Requests & Code Review',
+      contentMd:
+        '# Pull Requests & Code Review\n\nOpen a PR, request review, and iterate.\n\n- Remote setup\n- Review etiquette\n- Status checks',
+      module: { connect: { slug: 'git-basics' } },
+      order: 4,
+    },
+    update: {},
+  });
+
+  await db.lesson.upsert({
+    where: { slug: 'git-rebase-history' },
+    create: {
+      slug: 'git-rebase-history',
+      title: 'Rebasing & History Hygiene',
+      contentMd:
+        '# Rebasing & History Hygiene\n\nKeep a clean history with interactive rebase, squash, and amend.\n\n> Rewriting history affects pushed commits; prefer squash on feature branches.',
+      module: { connect: { slug: 'git-basics' } },
+      order: 5,
+    },
+    update: {},
+  });
+
+  await db.lesson.upsert({
+    where: { slug: 'git-conflicts' },
+    create: {
+      slug: 'git-conflicts',
+      title: 'Resolving Conflicts',
+      contentMd:
+        '# Resolving Conflicts\n\nPractice conflict resolution strategies and common pitfalls.\n\n- Understand conflict markers\n- Use `git status` and `git add` to mark resolved\n- Prefer minimal diffs',
+      module: { connect: { slug: 'git-basics' } },
+      order: 6,
     },
     update: {},
   });

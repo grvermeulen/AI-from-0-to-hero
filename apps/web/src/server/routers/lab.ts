@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, protectedProcedure, resolveDbUserIdFromSession } from '@/server/trpc';
+import * as Sentry from '@sentry/nextjs';
 import { offlineMode } from '@/server/env';
 type SubmissionStatus = 'PENDING' | 'PASSED' | 'FAILED';
 const SubmissionStatus = { PENDING: 'PENDING' as SubmissionStatus };
@@ -19,7 +20,7 @@ export const labRouter = createTRPCRouter({
       if (offlineMode()) {
         return { id: input.labId, title: 'Sample Lab', description: 'Submit a repo URL or code snippet.' };
       }
-      const lab = await ctx.db.lab.findUnique({ where: { id: input.labId } });
+      const lab = await Sentry.startSpan({ op: 'db.query', name: 'lab.findUnique' }, async () => ctx.db.lab.findUnique({ where: { id: input.labId } }));
       if (!lab) throw new TRPCError({ code: 'NOT_FOUND', message: 'Lab not found' });
       return lab;
     }),
@@ -48,7 +49,7 @@ export const labRouter = createTRPCRouter({
         // Use 413 semantics via custom code in message; tRPC maps to 400. Clients can branch on message/code.
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'PAYLOAD_TOO_LARGE' });
       }
-      const created = await ctx.db.submission.create({
+      const created = await Sentry.startSpan({ op: 'db.query', name: 'submission.create' }, async () => ctx.db.submission.create({
         data: {
           userId,
           labId: input.labId,
@@ -56,8 +57,8 @@ export const labRouter = createTRPCRouter({
           code: codeSanitized,
           status: SubmissionStatus.PENDING,
         },
-      });
-      await recordXpEvent(ctx, { userId, kind: 'lab_submit', amount: 10 });
+      }));
+      await Sentry.startSpan({ op: 'xp', name: 'record lab_submit' }, async () => recordXpEvent(ctx, { userId, kind: 'lab_submit', amount: 10 }));
       return { id: created.id, status: SubmissionStatus.PENDING };
     }),
 });

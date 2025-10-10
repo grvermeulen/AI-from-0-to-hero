@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
+import * as Sentry from '@sentry/nextjs';
 type Role = 'ADMIN' | 'STAFF' | 'LEARNER';
 import { hash } from 'bcryptjs';
 import { z } from 'zod';
@@ -93,6 +94,7 @@ export async function POST(req: Request) {
     const requestId = getRequestId(req);
     const log = createLogger({ requestId });
     log.error({ code: 'SERVER_ERROR', err }, 'Signup server error');
+    Sentry.captureException(err);
     if (wantsJson(req)) {
       return NextResponse.json({ code: 'SERVER', message: 'Unexpected server error.', requestId }, { status: 500 });
     }

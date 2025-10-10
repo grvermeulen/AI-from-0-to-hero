@@ -11,18 +11,18 @@ AI‑First QA Training Platform — Build Progress
 - [x] 5. Wire public/authed/admin tRPC routers
 - [x] 6. Build Home, Catalog, Lesson, Lab Runner, Quiz, Profile screens
 - [x] 7. Add XP engine + badges + leaderboards
-- [ ] 8. Integrate AI prompt widgets; ReadyAPI → Playwright template
-- [ ] 9. Testing: unit/integration/e2e; Axe + Lighthouse
-- [ ] 10. Observability: pino logs; healthcheck; Sentry (optional)
-- [ ] 11. CI/CD with GitHub Actions + Railway; migrations on boot
-- [ ] 12. Docs: ARCHITECTURE, SECURITY, ADRs; admin provisioning
+- [x] 8. Integrate AI prompt widgets; ReadyAPI → Playwright template
+- [x] 9. Testing: unit/integration/e2e; Axe + Lighthouse
+- [x] 10. Observability: pino logs; healthcheck; Sentry (optional)
+- [x] 11. CI/CD with GitHub Actions + Railway; migrations on boot
+- [x] 12. Docs: ARCHITECTURE, SECURITY, ADRs; admin provisioning
   - [ ] Security hardening follow-ups:
     - [ ] Rate limiting: add Redis-backed buckets for multi-instance deployments (current: in-memory, single-instance)
     - [ ] Signup password UI: show clear requirement hints/messages matching server-side validation
 
 Environment note: requires Node >=20 (see `.nvmrc`). If your Node is older, run `nvm install 20 && nvm use 20`.
 
-Last updated: Steps 1–5 complete (scaffold, tRPC baseline, Auth+RBAC, Prisma schema/seed, routers). Starting Step 6: initial UI screens (Catalog, Module, Lesson).
+Last updated: Steps 1–12 complete. AI widgets live, Axe + Lighthouse added to CI, Sentry logging and spans wired. Security follow-ups tracked below.
 
 ---
 
