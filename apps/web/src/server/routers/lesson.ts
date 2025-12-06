@@ -3,6 +3,14 @@ import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '@/server/trpc';
 import { recordXpEvent } from '@/server/xp';
 
+type LessonAttempt = {
+  id: string;
+  createdAt: Date;
+  status: 'PENDING' | 'PASSED' | 'FAILED';
+  score: number | null;
+  feedback: string | null;
+};
+
 export const lessonRouter = createTRPCRouter({
   get: publicProcedure
     .input(z.object({ slug: z.string().min(1) }))
@@ -28,7 +36,7 @@ export const lessonRouter = createTRPCRouter({
       const userId = ctx.session!.user!.id;
       const lesson = await ctx.db.lesson.findUnique({ where: { slug: input.slug } });
       if (!lesson) throw new TRPCError({ code: 'NOT_FOUND', message: 'Lesson not found' });
-      const attempts = await ctx.db.submission.findMany({
+      const attempts: LessonAttempt[] = await ctx.db.submission.findMany({
         where: { userId },
         orderBy: { createdAt: 'desc' },
         take: input.take ?? 5,
