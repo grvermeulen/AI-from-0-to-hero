@@ -1,5 +1,5 @@
 // Import PrismaClient in a way that works with ESM and typechecking in CI
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// eslint-disable-next-line -- Prisma client import relies on generated types
 // @ts-ignore
 import { PrismaClient as PrismaClientCtor } from '@prisma/client';
 type PrismaClientType = InstanceType<typeof PrismaClientCtor>;

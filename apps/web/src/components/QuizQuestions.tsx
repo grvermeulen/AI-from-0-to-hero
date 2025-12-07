@@ -54,7 +54,6 @@ export default function QuizQuestions({ quizId, questions }: { quizId: string; q
                         name={`q_${q.id}`}
                         value={opt}
                         required
-                        aria-required="true"
                         checked={answers[q.id] === opt}
                         onChange={(e) => onChange(q.id, (e.target as HTMLInputElement).value)}
                       />
